@@ -44,8 +44,9 @@
 
   &__field-bg {
     background-image: url(../images/snake.svg);
-    background-position: bottom;
+    background-position: center;
     background-repeat: no-repeat;
+    background-size: contain;
   }
 
   &__start-btn {
