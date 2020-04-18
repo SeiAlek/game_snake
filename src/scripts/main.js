@@ -17,7 +17,6 @@ function initGame(container, grid) {
   document.addEventListener('keydown', handleKeyPress);
 
   canvasInit();
-  requestAnimationFrame(loop);
 
   const canvas = container.querySelector('.game__field');
   const context = canvas.getContext('2d');
@@ -102,7 +101,7 @@ function initGame(container, grid) {
   };
 
   const apple = {
-    draw() {
+    drawing() {
       context.fillStyle = colorFood;
       context.fillRect(this.x, this.y, grid - 1, grid - 1);
     },
@@ -115,18 +114,7 @@ function initGame(container, grid) {
 
   resetGame();
   drawScorePanel(score, live);
-
-  function canvasInit() {
-    container.insertAdjacentHTML('afterbegin', `
-      <div class="game__field-bg">
-        <canvas
-          class="game__field"
-          width="${width}"
-          height="${height}"
-        ></canvas>
-      </div>
-    `);
-  }
+  loop();
 
   function loop() {
     requestAnimationFrame(loop);
@@ -139,7 +127,7 @@ function initGame(container, grid) {
     clearField();
     snake.moving();
     snake.handleLength();
-    apple.draw();
+    apple.drawing();
     snake.drawing();
   }
 
@@ -171,29 +159,20 @@ function initGame(container, grid) {
     }, 100);
   }
 
-  function resetGame() {
-    const congrat = container.querySelector('.game__congrat');
-    const scorePanel = container.querySelector('.game__score-panel');
-
-    if (congrat) {
-      congrat.remove();
-    }
-
-    if (scorePanel) {
-      scorePanel.remove();
-    }
-
-    speed = 0;
-    speedRate = 10;
-    score = 0;
-    live = 3;
-
-    apple.reset();
-    snake.reset();
-  }
-
   function clearField() {
     context.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  function canvasInit() {
+    container.insertAdjacentHTML('afterbegin', `
+      <div class="game__field-bg">
+        <canvas
+          class="game__field"
+          width="${width}"
+          height="${height}"
+        ></canvas>
+      </div>
+    `);
   }
 
   function drawScorePanel() {
@@ -250,6 +229,27 @@ function initGame(container, grid) {
     const randomCoord = randomNum * grid;
 
     return randomCoord;
+  }
+
+  function resetGame() {
+    const congrat = container.querySelector('.game__congrat');
+    const scorePanel = container.querySelector('.game__score-panel');
+
+    if (congrat) {
+      congrat.remove();
+    }
+
+    if (scorePanel) {
+      scorePanel.remove();
+    }
+
+    speed = 0;
+    speedRate = 10;
+    score = 0;
+    live = 3;
+
+    apple.reset();
+    snake.reset();
   }
 
   function endGame() {
