@@ -37,9 +37,15 @@
     position: relative;
     box-sizing: content-box;
     box-shadow: 0 0 ($unit * 3) rgba(32, 64, 81, 0.3) inset;
-    background-color: $c-light;
+    background-color: rgba(202, 232, 213, 0.8);
     border: 1px solid rgba(32, 64, 81, 0.8);
     border-radius: ($unit / 2);
+  }
+
+  &__field-bg {
+    background-image: url(../images/snake.svg);
+    background-position: bottom;
+    background-repeat: no-repeat;
   }
 
   &__start-btn {
