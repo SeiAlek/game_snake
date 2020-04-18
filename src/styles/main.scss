@@ -1,7 +1,9 @@
 @import "utils";
 @import "fonts";
 @import "typography";
+@import "page";
+@import "game";
 
-body {
-  background: $c-gray;
+.hide {
+  display: none;
 }

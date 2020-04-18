@@ -1,0 +1,66 @@
+@import "utils";
+
+.game {
+
+  &__score-panel {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 0 ($unit * 2);
+    padding: ($unit / 2) ($unit);
+    box-sizing: border-box;
+    box-shadow: 0 0 ($unit * 3) rgba(32, 64, 81, 0.3) inset;
+    background-color: $c-dark;
+    border-radius: ($unit / 2);
+    font-size: 24px;
+    color: $c-light;
+  }
+
+  &__score {
+    &--center {
+      width: 100%;
+      text-align: center;
+      justify-content: center;
+    }
+  }
+
+  &__image {
+    min-width: 300px;
+  }
+
+  &__congrat {
+    text-align: center;
+    text-shadow: 1px 1px 8px $c-dark;
+    color: $c-light;
+  }
+
+  &__field {
+    position: relative;
+    box-sizing: content-box;
+    box-shadow: 0 0 ($unit * 3) rgba(32, 64, 81, 0.3) inset;
+    background-color: $c-light;
+    border: 1px solid rgba(32, 64, 81, 0.8);
+    border-radius: ($unit / 2);
+  }
+
+  &__start-btn {
+    display: block;
+    width: 100%;
+    margin: 20px auto;
+    padding: ($unit / 2) ($unit);
+    font-size: 30px;
+    background-color: $c-dark;
+    border: 1px solid $c-dark;
+    border-radius: ($unit / 2);
+    font-weight: bold;
+    color: $c-light;
+    transition: color 0.3s, background-color 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+
+    &:hover,
+    &:focus {
+      background-color: $c-blue;
+      color: $c-dark;
+      box-shadow: 0 0 ($unit * 3) rgba(32, 64, 81, 0.8);
+    }
+  }
+}
