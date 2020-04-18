@@ -5,25 +5,18 @@ const game = document.querySelector('.game');
 
 btnStartSnake.addEventListener('click', () => {
   btnStartSnake.classList.add('hide');
-  initGame(game);
+  initGame(game, 16);
 });
 
-function initGame(container) {
-  const grid = 16;
+function initGame(container, grid) {
   const width = grid * 25;
-  const height = grid * 25;
+  const height = grid * 30;
   const colorSnake = '#204051';
   const colorFood = '#ff0000';
 
-  container.insertAdjacentHTML('afterbegin', `
-    <div class="game__field-bg">
-      <canvas
-        class="game__field"
-        width="${width}"
-        height="${height}"
-      ></canvas>
-    </div>
-  `);
+  document.addEventListener('keydown', handleKeyPress);
+
+  canvasInit();
   requestAnimationFrame(loop);
 
   const canvas = container.querySelector('.game__field');
@@ -35,13 +28,105 @@ function initGame(container) {
   let live = 3;
   let cooldown = false;
 
-  const snake = {};
-  const apple = {};
+  const snake = {
+    setVelocity(x, y) {
+      this.dx = x;
+      this.dy = y;
+    },
+
+    moving() {
+      this.x += snake.dx;
+      this.y += snake.dy;
+
+      if (this.x < 0) {
+        this.x = canvas.width - grid;
+      } else if (this.x >= canvas.width) {
+        this.x = 0;
+      }
+
+      if (this.y < 0) {
+        this.y = canvas.height - grid;
+      } else if (this.y >= canvas.height) {
+        this.y = 0;
+      }
+    },
+
+    handleLength() {
+      this.cells.unshift(
+        {
+          x: snake.x,
+          y: snake.y,
+        }
+      );
+
+      if (this.cells.length > this.length) {
+        this.cells.pop();
+      }
+    },
+
+    drawing() {
+      context.fillStyle = colorSnake;
+
+      this.cells.forEach((cell, index) => {
+        context.fillRect(cell.x, cell.y, grid - 1, grid - 1);
+
+        this.checkAppleCollision(cell);
+        this.checkSelfCollision(cell, index);
+      });
+    },
+
+    checkAppleCollision(cell) {
+      if (cell.x === apple.x && cell.y === apple.y) {
+        this.length++;
+        updateScore(score);
+        apple.reset();
+      }
+    },
+
+    checkSelfCollision(cell, index) {
+      for (let i = index + 1; i < this.cells.length; i++) {
+        if (cell.x === this.cells[i].x && cell.y === this.cells[i].y) {
+          updateLive();
+        }
+      }
+    },
+
+    reset() {
+      this.x = 160;
+      this.y = 160;
+      this.cells = [];
+      this.length = 4;
+      this.dx = grid;
+      this.dy = 0;
+    },
+  };
+
+  const apple = {
+    draw() {
+      context.fillStyle = colorFood;
+      context.fillRect(this.x, this.y, grid - 1, grid - 1);
+    },
+
+    reset() {
+      this.x = getRandomCoord();
+      this.y = getRandomCoord();
+    },
+  };
 
   resetGame();
   drawScorePanel(score, live);
 
-  document.addEventListener('keydown', handleKeyPress);
+  function canvasInit() {
+    container.insertAdjacentHTML('afterbegin', `
+      <div class="game__field-bg">
+        <canvas
+          class="game__field"
+          width="${width}"
+          height="${height}"
+        ></canvas>
+      </div>
+    `);
+  }
 
   function loop() {
     requestAnimationFrame(loop);
@@ -52,10 +137,10 @@ function initGame(container) {
     speed = 0;
 
     clearField();
-    moveSnake();
-    drawSnake();
-    drawApple();
-    checkCollisions();
+    snake.moving();
+    snake.handleLength();
+    apple.draw();
+    snake.drawing();
   }
 
   function handleKeyPress(e) {
@@ -64,19 +149,19 @@ function initGame(container) {
     }
 
     if ((e.key === 'ArrowUp' || e.keyCode === 87) && !(snake.dy > 0)) {
-      setVelocity(0, -grid);
+      snake.setVelocity(0, -grid);
     }
 
     if ((e.key === 'ArrowDown' || e.keyCode === 83) && !(snake.dy < 0)) {
-      setVelocity(0, grid);
+      snake.setVelocity(0, grid);
     }
 
     if ((e.key === 'ArrowLeft' || e.keyCode === 65) && !(snake.dx > 0)) {
-      setVelocity(-grid, 0);
+      snake.setVelocity(-grid, 0);
     }
 
     if ((e.key === 'ArrowRight' || e.keyCode === 68) && !(snake.dx < 0)) {
-      setVelocity(grid, 0);
+      snake.setVelocity(grid, 0);
     }
 
     cooldown = true;
@@ -84,87 +169,6 @@ function initGame(container) {
     setTimeout(() => {
       cooldown = false;
     }, 100);
-  }
-
-  function setVelocity(x, y) {
-    snake.dx = x;
-    snake.dy = y;
-  }
-
-  function moveSnake() {
-    snake.x += snake.dx;
-    snake.y += snake.dy;
-
-    if (snake.x < 0) {
-      snake.x = canvas.width - grid;
-    } else if (snake.x >= canvas.width) {
-      snake.x = 0;
-    }
-
-    if (snake.y < 0) {
-      snake.y = canvas.height - grid;
-    } else if (snake.y >= canvas.height) {
-      snake.y = 0;
-    }
-  }
-
-  function drawSnake() {
-    snake.cells.unshift(
-      {
-        x: snake.x,
-        y: snake.y,
-      }
-    );
-
-    if (snake.cells.length > snake.length) {
-      snake.cells.pop();
-    }
-  }
-
-  function drawApple() {
-    context.fillStyle = colorFood;
-    context.fillRect(apple.x, apple.y, grid - 1, grid - 1);
-  }
-
-  function checkCollisions() {
-    context.fillStyle = colorSnake;
-
-    snake.cells.forEach(function(cell, index) {
-      context.fillRect(cell.x, cell.y, grid - 1, grid - 1);
-
-      checkAppleCollision(cell);
-      checkSelfCollision(cell, index);
-    });
-  }
-
-  function checkAppleCollision(cell) {
-    if (cell.x === apple.x && cell.y === apple.y) {
-      snake.length++;
-      updateScore(score);
-      resetApple();
-    }
-  }
-
-  function checkSelfCollision(cell, index) {
-    for (let i = index + 1; i < snake.cells.length; i++) {
-      if (cell.x === snake.cells[i].x && cell.y === snake.cells[i].y) {
-        updateLive();
-      }
-    }
-  }
-
-  function resetApple() {
-    apple.x = getRandomCoord();
-    apple.y = getRandomCoord();
-  }
-
-  function resetSnake() {
-    snake.x = 160;
-    snake.y = 160;
-    snake.cells = [];
-    snake.length = 4;
-    snake.dx = grid;
-    snake.dy = 0;
   }
 
   function resetGame() {
@@ -184,8 +188,8 @@ function initGame(container) {
     score = 0;
     live = 3;
 
-    resetApple();
-    resetSnake();
+    apple.reset();
+    snake.reset();
   }
 
   function clearField() {
@@ -193,7 +197,7 @@ function initGame(container) {
   }
 
   function drawScorePanel() {
-    canvas.insertAdjacentHTML('beforebegin', `
+    container.insertAdjacentHTML('afterbegin', `
       <section class="game__score-panel">
         <div class="game__score">
           Score:
@@ -217,8 +221,8 @@ function initGame(container) {
   function updateLive() {
     const value = container.querySelector('.game__live-value');
 
-    resetSnake();
-    resetApple();
+    snake.reset();
+    apple.reset();
     updateSpeed(10);
 
     live--;
