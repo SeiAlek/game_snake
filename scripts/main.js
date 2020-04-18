@@ -16,11 +16,13 @@ function initGame(container) {
   const colorFood = '#ff0000';
 
   container.insertAdjacentHTML('afterbegin', `
-    <canvas
-      class="game__field"
-      width="${width}"
-      height="${height}"
-    ></canvas>
+    <div class="game__field-bg">
+      <canvas
+        class="game__field"
+        width="${width}"
+        height="${height}"
+      ></canvas>
+    </div>
   `);
   requestAnimationFrame(loop);
 
