@@ -1,0 +1,106 @@
+h1 {
+  font-family: "Roboto", sans-serif;
+  font-weight: 400; }
+
+@font-face {
+  font-family: "Roboto";
+  src: url("../fonts/Roboto-Regular-webfont.woff") format("woff");
+  font-weight: normal;
+  font-style: normal; }
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #3b6978;
+  font-family: "Roboto", sans-serif; }
+
+h1 {
+  font-family: "Roboto", sans-serif;
+  font-weight: 400; }
+
+.page {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  height: 100vh;
+  margin: auto; }
+
+h1 {
+  font-family: "Roboto", sans-serif;
+  font-weight: 400; }
+
+.game__score-panel {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  margin: 0 0 32px;
+  padding: 8px 16px;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  -webkit-box-shadow: 0 0 48px rgba(32, 64, 81, 0.3) inset;
+          box-shadow: 0 0 48px rgba(32, 64, 81, 0.3) inset;
+  background-color: #204051;
+  border-radius: 8px;
+  font-size: 24px;
+  color: #cae8d5; }
+
+.game__score--center {
+  width: 100%;
+  text-align: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center; }
+
+.game__image {
+  min-width: 300px; }
+
+.game__congrat {
+  text-align: center;
+  text-shadow: 1px 1px 8px #204051;
+  color: #cae8d5; }
+
+.game__field {
+  position: relative;
+  -webkit-box-sizing: content-box;
+          box-sizing: content-box;
+  -webkit-box-shadow: 0 0 48px rgba(32, 64, 81, 0.3) inset;
+          box-shadow: 0 0 48px rgba(32, 64, 81, 0.3) inset;
+  background-color: #cae8d5;
+  border: 1px solid rgba(32, 64, 81, 0.8);
+  border-radius: 8px; }
+
+.game__start-btn {
+  display: block;
+  width: 100%;
+  margin: 20px auto;
+  padding: 8px 16px;
+  font-size: 30px;
+  background-color: #204051;
+  border: 1px solid #204051;
+  border-radius: 8px;
+  font-weight: bold;
+  color: #cae8d5;
+  -webkit-transition: color 0.3s, background-color 0.3s, -webkit-box-shadow 0.3s;
+  transition: color 0.3s, background-color 0.3s, -webkit-box-shadow 0.3s;
+  transition: color 0.3s, background-color 0.3s, box-shadow 0.3s;
+  transition: color 0.3s, background-color 0.3s, box-shadow 0.3s, -webkit-box-shadow 0.3s;
+  cursor: pointer; }
+  .game__start-btn:hover, .game__start-btn:focus {
+    background-color: #84a9ac;
+    color: #204051;
+    -webkit-box-shadow: 0 0 48px rgba(32, 64, 81, 0.8);
+            box-shadow: 0 0 48px rgba(32, 64, 81, 0.8); }
+
+.hide {
+  display: none; }
+
+/*# sourceMappingURL=main.css.map */
