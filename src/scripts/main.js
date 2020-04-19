@@ -9,7 +9,7 @@ btnStartSnake.addEventListener('click', (e) => {
   initGame(game, 16);
 });
 
-function initGame(container, grid) {
+function initGame(container, grid = 16) {
   const clientHeight = document.documentElement.clientHeight;
   const clientWidth = document.documentElement.clientWidth;
 
@@ -45,7 +45,7 @@ function initGame(container, grid) {
   const swipe = {
     threshold: grid * 2,
 
-    setInitCoords(x, y) {
+    setRotationCoords(x, y) {
       this.initX = x;
       this.initY = y;
     },
@@ -176,7 +176,7 @@ function initGame(container, grid) {
 
     setTimeout(() => {
       cooldown = false;
-    }, 100);
+    }, 1000 / fps);
   }
 
   function handleTouchStart(e) {
@@ -187,15 +187,11 @@ function initGame(container, grid) {
     const x = e.targetTouches[0].screenX;
     const y = e.targetTouches[0].screenY;
 
-    swipe.setInitCoords(x, y);
+    swipe.setRotationCoords(x, y);
   }
 
   function handleTouch(e) {
     e.preventDefault();
-
-    // if (cooldown) {
-    //   return false;
-    // }
 
     const lastTouch = e.targetTouches[0];
     const actualX = lastTouch.screenX;
@@ -205,7 +201,7 @@ function initGame(container, grid) {
       ((swipe.initX - actualX) > swipe.threshold)
       && (snake.dx === 0)
     ) {
-      swipe.setInitCoords(actualX, actualY);
+      swipe.setRotationCoords(actualX, actualY);
       snake.setVelocity(-grid, 0);
 
       return;
@@ -215,7 +211,7 @@ function initGame(container, grid) {
       ((swipe.initX - actualX) < -swipe.threshold)
       && (snake.dx === 0)
     ) {
-      swipe.setInitCoords(actualX, actualY);
+      swipe.setRotationCoords(actualX, actualY);
       snake.setVelocity(grid, 0);
 
       return;
@@ -225,7 +221,7 @@ function initGame(container, grid) {
       ((swipe.initY - actualY) > swipe.threshold)
       && (snake.dy === 0)
     ) {
-      swipe.setInitCoords(actualX, actualY);
+      swipe.setRotationCoords(actualX, actualY);
       snake.setVelocity(0, -grid);
 
       return;
@@ -235,15 +231,9 @@ function initGame(container, grid) {
       ((swipe.initY - actualY) < -swipe.threshold)
       && (snake.dy === 0)
     ) {
-      swipe.setInitCoords(actualX, actualY);
+      swipe.setRotationCoords(actualX, actualY);
       snake.setVelocity(0, grid);
     }
-
-    // cooldown = true;
-
-    // setTimeout(() => {
-    //   cooldown = false;
-    // }, 100);
   }
 
   function handleTouchEnd(e) {
