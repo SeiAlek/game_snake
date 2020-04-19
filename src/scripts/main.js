@@ -178,8 +178,8 @@ function initGame(container, grid) {
           Score:
           <span class="game__score-value">${score}</span>
         </div>
-        <div class="game__live">Live:
-          <span class="game__live-value">${live}</span>
+        <div class="game__live">
+          ${drawHeart(live)}
         </div>
       </section>
     `);
@@ -194,18 +194,27 @@ function initGame(container, grid) {
   }
 
   function updateLive() {
-    const value = container.querySelector('.game__live-value');
+    const value = container.querySelector('.game__live');
 
     snake.reset();
     apple.reset();
     updateSpeed(fpsBase);
 
     live--;
-    value.innerHTML = live;
+    value.innerHTML = drawHeart(live);
 
     if (live === 0) {
       endGame();
     }
+  }
+
+  function drawHeart(qty) {
+    const heartAlive = '<div class="game__heart game__heart-alive"></div>';
+    const heartBroken = '<div class="game__heart game__heart-broken"></div>';
+    const lives = heartAlive.repeat(qty);
+    const broken = heartBroken.repeat(3 - qty);
+
+    return broken + lives;
   }
 
   function updateSpeed(rate) {

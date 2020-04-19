@@ -23,6 +23,28 @@
     }
   }
 
+  &__live {
+    display: flex;
+  }
+
+  &__heart {
+    height: ($unit * 2);
+    width: ($unit * 2);
+    margin-left: ($unit / 4);
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+  }
+
+  &__heart-alive {
+    background-image: url(../images/heart.svg);
+
+  }
+
+  &__heart-broken {
+    background-image: url(../images/heart-broken.svg);
+  }
+
   &__image {
     min-width: 300px;
   }
