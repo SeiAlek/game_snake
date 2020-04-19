@@ -54,9 +54,6 @@ h1 {
   color: #cae8d5; }
   @media screen and (max-width: 768px) {
     .game__score-panel {
-      -webkit-box-pack: start;
-          -ms-flex-pack: start;
-              justify-content: flex-start;
       margin: 6px 0; } }
 
 .game__score--center {
