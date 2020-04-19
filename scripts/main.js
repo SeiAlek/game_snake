@@ -16,6 +16,9 @@ function initGame(container, grid) {
   const fpsBase = 5;
 
   document.addEventListener('keydown', handleKeyPress);
+  container.addEventListener('touchstart', handleTouchStart);
+  container.addEventListener('touchmove', handleTouch);
+  container.addEventListener('touchend', handleTouchEnd);
 
   canvasInit();
 
@@ -26,6 +29,18 @@ function initGame(container, grid) {
   let score = 0;
   let live = 3;
   let cooldown = false;
+
+  const swipe = {
+    threshold: grid * 3,
+
+    setInitX(value) {
+      this.initX = value;
+    },
+
+    setInitY(value) {
+      this.initY = value;
+    },
+  };
 
   const snake = {
     setVelocity(x, y) {
@@ -132,19 +147,19 @@ function initGame(container, grid) {
       return false;
     }
 
-    if ((e.key === 'ArrowUp' || e.keyCode === 87) && !(snake.dy > 0)) {
+    if ((e.key === 'ArrowUp' || e.keyCode === 87) && (snake.dy === 0)) {
       snake.setVelocity(0, -grid);
     }
 
-    if ((e.key === 'ArrowDown' || e.keyCode === 83) && !(snake.dy < 0)) {
+    if ((e.key === 'ArrowDown' || e.keyCode === 83) && (snake.dy === 0)) {
       snake.setVelocity(0, grid);
     }
 
-    if ((e.key === 'ArrowLeft' || e.keyCode === 65) && !(snake.dx > 0)) {
+    if ((e.key === 'ArrowLeft' || e.keyCode === 65) && (snake.dx === 0)) {
       snake.setVelocity(-grid, 0);
     }
 
-    if ((e.key === 'ArrowRight' || e.keyCode === 68) && !(snake.dx < 0)) {
+    if ((e.key === 'ArrowRight' || e.keyCode === 68) && (snake.dx === 0)) {
       snake.setVelocity(grid, 0);
     }
 
@@ -153,6 +168,77 @@ function initGame(container, grid) {
     setTimeout(() => {
       cooldown = false;
     }, 100);
+  }
+
+  function handleTouchStart(e) {
+    if (cooldown) {
+      return false;
+    }
+
+    const x = e.targetTouches[0].screenX;
+    const y = e.targetTouches[0].screenY;
+
+    swipe.setInitX(x);
+    swipe.setInitY(y);
+  }
+
+  function handleTouch(e) {
+    e.preventDefault();
+
+    if (cooldown) {
+      return false;
+    }
+
+    const lastTouch = e.targetTouches[0];
+    const actualX = lastTouch.screenX;
+    const actualY = lastTouch.screenY;
+
+    if (
+      ((swipe.initX - actualX) > swipe.threshold)
+      && (snake.dx === 0)
+    ) {
+      swipe.setInitX(actualX);
+
+      return snake.setVelocity(-grid, 0);
+    }
+
+    if (
+      ((swipe.initX - actualX) < -swipe.threshold)
+      && (snake.dx === 0)
+    ) {
+      swipe.setInitX(swipe.initX);
+
+      return snake.setVelocity(grid, 0);
+    }
+
+    if (
+      ((swipe.initY - actualY) > swipe.threshold)
+      && (snake.dy === 0)
+    ) {
+      swipe.setInitY(actualY);
+
+      return snake.setVelocity(0, -grid);
+    }
+
+    if (
+      ((swipe.initY - actualY) < -swipe.threshold)
+      && (snake.dy === 0)
+    ) {
+      swipe.setInitY(actualY);
+
+      return snake.setVelocity(0, grid);
+    }
+
+    cooldown = true;
+
+    setTimeout(() => {
+      cooldown = false;
+    }, 100);
+  }
+
+  function handleTouchEnd(e) {
+    delete swipe.startX;
+    delete swipe.startY;
   }
 
   function clearField() {
