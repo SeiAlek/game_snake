@@ -210,8 +210,10 @@ function initGame(container, grid) {
       && (snake.dx === 0)
     ) {
       swipe.setInitX(actualX);
+      swipe.setInitY(actualY);
+      snake.setVelocity(-grid, 0);
 
-      return snake.setVelocity(-grid, 0);
+      return;
     }
 
     if (
@@ -219,26 +221,30 @@ function initGame(container, grid) {
       && (snake.dx === 0)
     ) {
       swipe.setInitX(swipe.initX);
+      swipe.setInitY(actualY);
+      snake.setVelocity(grid, 0);
 
-      return snake.setVelocity(grid, 0);
+      return;
     }
 
     if (
       ((swipe.initY - actualY) > swipe.threshold)
       && (snake.dy === 0)
     ) {
+      swipe.setInitX(swipe.initX);
       swipe.setInitY(actualY);
+      snake.setVelocity(0, -grid);
 
-      return snake.setVelocity(0, -grid);
+      return;
     }
 
     if (
       ((swipe.initY - actualY) < -swipe.threshold)
       && (snake.dy === 0)
     ) {
+      swipe.setInitX(swipe.initX);
       swipe.setInitY(actualY);
-
-      return snake.setVelocity(0, grid);
+      snake.setVelocity(0, grid);
     }
 
     // cooldown = true;
