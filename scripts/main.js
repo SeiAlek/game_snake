@@ -43,7 +43,7 @@ function initGame(container, grid) {
   let cooldown = false;
 
   const swipe = {
-    threshold: grid * 3,
+    threshold: grid,
 
     setInitX(value) {
       this.initX = value;
