@@ -30,9 +30,6 @@ h1 {
           align-items: center;
   height: 100vh;
   margin: auto; }
-  @media screen and (max-width: 768px) {
-    .page {
-      padding-bottom: 32px; } }
 
 h1 {
   font-family: "Roboto", sans-serif;

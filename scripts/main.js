@@ -197,9 +197,9 @@ function initGame(container, grid) {
   function handleTouch(e) {
     e.preventDefault();
 
-    if (cooldown) {
-      return false;
-    }
+    // if (cooldown) {
+    //   return false;
+    // }
 
     const lastTouch = e.targetTouches[0];
     const actualX = lastTouch.screenX;
@@ -241,11 +241,11 @@ function initGame(container, grid) {
       return snake.setVelocity(0, grid);
     }
 
-    cooldown = true;
+    // cooldown = true;
 
-    setTimeout(() => {
-      cooldown = false;
-    }, 100);
+    // setTimeout(() => {
+    //   cooldown = false;
+    // }, 100);
   }
 
   function handleTouchEnd(e) {
