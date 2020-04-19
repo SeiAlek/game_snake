@@ -45,12 +45,9 @@ function initGame(container, grid) {
   const swipe = {
     threshold: grid * 2,
 
-    setInitX(value) {
-      this.initX = value;
-    },
-
-    setInitY(value) {
-      this.initY = value;
+    setInitCoords(x, y) {
+      this.initX = x;
+      this.initY = y;
     },
   };
 
@@ -190,8 +187,7 @@ function initGame(container, grid) {
     const x = e.targetTouches[0].screenX;
     const y = e.targetTouches[0].screenY;
 
-    swipe.setInitX(x);
-    swipe.setInitY(y);
+    swipe.setInitCoords(x, y);
   }
 
   function handleTouch(e) {
@@ -209,8 +205,7 @@ function initGame(container, grid) {
       ((swipe.initX - actualX) > swipe.threshold)
       && (snake.dx === 0)
     ) {
-      swipe.setInitX(actualX);
-      swipe.setInitY(actualY);
+      swipe.setInitCoords(actualX, actualY);
       snake.setVelocity(-grid, 0);
 
       return;
@@ -220,8 +215,7 @@ function initGame(container, grid) {
       ((swipe.initX - actualX) < -swipe.threshold)
       && (snake.dx === 0)
     ) {
-      swipe.setInitX(swipe.initX);
-      swipe.setInitY(actualY);
+      swipe.setInitCoords(actualX, actualY);
       snake.setVelocity(grid, 0);
 
       return;
@@ -231,8 +225,7 @@ function initGame(container, grid) {
       ((swipe.initY - actualY) > swipe.threshold)
       && (snake.dy === 0)
     ) {
-      swipe.setInitX(swipe.initX);
-      swipe.setInitY(actualY);
+      swipe.setInitCoords(actualX, actualY);
       snake.setVelocity(0, -grid);
 
       return;
@@ -242,8 +235,7 @@ function initGame(container, grid) {
       ((swipe.initY - actualY) < -swipe.threshold)
       && (snake.dy === 0)
     ) {
-      swipe.setInitX(swipe.initX);
-      swipe.setInitY(actualY);
+      swipe.setInitCoords(actualX, actualY);
       snake.setVelocity(0, grid);
     }
 
