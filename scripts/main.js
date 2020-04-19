@@ -24,7 +24,7 @@ function initGame(container, grid) {
   }
 
   if (clientHeight < 1024 && clientWidth < 768) {
-    height = (clientHeight - (clientHeight % grid)) - (grid * 4);
+    height = (clientHeight - (clientHeight % grid)) - (grid * 6);
   }
 
   document.addEventListener('keydown', handleKeyPress);
