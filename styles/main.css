@@ -60,6 +60,25 @@ h1 {
       -ms-flex-pack: center;
           justify-content: center; }
 
+.game__live {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex; }
+
+.game__heart {
+  height: 32px;
+  width: 32px;
+  margin-left: 4px;
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat; }
+
+.game__heart-alive {
+  background-image: url(../images/heart.svg); }
+
+.game__heart-broken {
+  background-image: url(../images/heart-broken.svg); }
+
 .game__image {
   min-width: 300px; }
 
@@ -99,6 +118,7 @@ h1 {
   transition: color 0.3s, background-color 0.3s, -webkit-box-shadow 0.3s;
   transition: color 0.3s, background-color 0.3s, box-shadow 0.3s;
   transition: color 0.3s, background-color 0.3s, box-shadow 0.3s, -webkit-box-shadow 0.3s;
+  outline: none;
   cursor: pointer; }
   .game__start-btn:hover, .game__start-btn:focus {
     background-color: #84a9ac;

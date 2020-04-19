@@ -13,6 +13,7 @@ function initGame(container, grid) {
   const height = grid * 30;
   const colorSnake = '#204051';
   const colorFood = '#ff0000';
+  const fpsBase = 5;
 
   document.addEventListener('keydown', handleKeyPress);
 
@@ -21,8 +22,7 @@ function initGame(container, grid) {
   const canvas = container.querySelector('.game__field');
   const context = canvas.getContext('2d');
 
-  let speed = 0;
-  let speedRate = 10;
+  let fps = fpsBase;
   let score = 0;
   let live = 3;
   let cooldown = false;
@@ -117,18 +117,14 @@ function initGame(container, grid) {
   loop();
 
   function loop() {
-    requestAnimationFrame(loop);
-
-    if (++speed < speedRate) {
-      return;
-    }
-    speed = 0;
-
-    clearField();
-    snake.moving();
-    snake.handleLength();
-    apple.drawing();
-    snake.drawing();
+    setTimeout(function() {
+      requestAnimationFrame(loop);
+      clearField();
+      snake.moving();
+      snake.handleLength();
+      apple.drawing();
+      snake.drawing();
+    }, 1000 / fps);
   }
 
   function handleKeyPress(e) {
@@ -182,8 +178,8 @@ function initGame(container, grid) {
           Score:
           <span class="game__score-value">${score}</span>
         </div>
-        <div class="game__live">Live:
-          <span class="game__live-value">${live}</span>
+        <div class="game__live">
+          ${drawHeart(live)}
         </div>
       </section>
     `);
@@ -198,27 +194,36 @@ function initGame(container, grid) {
   }
 
   function updateLive() {
-    const value = container.querySelector('.game__live-value');
+    const value = container.querySelector('.game__live');
 
     snake.reset();
     apple.reset();
-    updateSpeed(10);
+    updateSpeed(fpsBase);
 
     live--;
-    value.innerHTML = live;
+    value.innerHTML = drawHeart(live);
 
     if (live === 0) {
       endGame();
     }
   }
 
+  function drawHeart(qty) {
+    const heartAlive = '<div class="game__heart game__heart-alive"></div>';
+    const heartBroken = '<div class="game__heart game__heart-broken"></div>';
+    const lives = heartAlive.repeat(qty);
+    const broken = heartBroken.repeat(3 - qty);
+
+    return broken + lives;
+  }
+
   function updateSpeed(rate) {
     if (rate) {
-      speedRate = rate;
+      fps = rate;
     }
 
-    if (score % 5 === 0 && speedRate > 1) {
-      speedRate--;
+    if (score % 5 === 0) {
+      fps++;
     }
   }
 
@@ -243,8 +248,7 @@ function initGame(container, grid) {
       scorePanel.remove();
     }
 
-    speed = 0;
-    speedRate = 10;
+    fps = fpsBase;
     score = 0;
     live = 3;
 
