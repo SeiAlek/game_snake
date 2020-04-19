@@ -13,6 +13,7 @@ function initGame(container, grid) {
   const height = grid * 30;
   const colorSnake = '#204051';
   const colorFood = '#ff0000';
+  const fpsBase = 5;
 
   document.addEventListener('keydown', handleKeyPress);
 
@@ -21,8 +22,7 @@ function initGame(container, grid) {
   const canvas = container.querySelector('.game__field');
   const context = canvas.getContext('2d');
 
-  let speed = 0;
-  let speedRate = 10;
+  let fps = fpsBase;
   let score = 0;
   let live = 3;
   let cooldown = false;
@@ -117,18 +117,14 @@ function initGame(container, grid) {
   loop();
 
   function loop() {
-    requestAnimationFrame(loop);
-
-    if (++speed < speedRate) {
-      return;
-    }
-    speed = 0;
-
-    clearField();
-    snake.moving();
-    snake.handleLength();
-    apple.drawing();
-    snake.drawing();
+    setTimeout(function() {
+      requestAnimationFrame(loop);
+      clearField();
+      snake.moving();
+      snake.handleLength();
+      apple.drawing();
+      snake.drawing();
+    }, 1000 / fps);
   }
 
   function handleKeyPress(e) {
@@ -202,7 +198,7 @@ function initGame(container, grid) {
 
     snake.reset();
     apple.reset();
-    updateSpeed(10);
+    updateSpeed(fpsBase);
 
     live--;
     value.innerHTML = live;
@@ -214,11 +210,11 @@ function initGame(container, grid) {
 
   function updateSpeed(rate) {
     if (rate) {
-      speedRate = rate;
+      fps = rate;
     }
 
-    if (score % 5 === 0 && speedRate > 1) {
-      speedRate--;
+    if (score % 5 === 0) {
+      fps++;
     }
   }
 
@@ -243,8 +239,7 @@ function initGame(container, grid) {
       scorePanel.remove();
     }
 
-    speed = 0;
-    speedRate = 10;
+    fps = fpsBase;
     score = 0;
     live = 3;
 

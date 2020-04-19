@@ -61,6 +61,7 @@
     font-weight: bold;
     color: $c-light;
     transition: color 0.3s, background-color 0.3s, box-shadow 0.3s;
+    outline: none;
     cursor: pointer;
 
     &:hover,
