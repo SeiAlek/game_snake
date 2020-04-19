@@ -52,6 +52,9 @@ h1 {
   border-radius: 8px;
   font-size: 24px;
   color: #cae8d5; }
+  @media screen and (max-width: 768px) {
+    .game__score-panel {
+      margin: 0 0 6px; } }
 
 .game__score--center {
   width: 100%;

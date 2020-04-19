@@ -3,17 +3,29 @@
 const btnStartSnake = document.querySelector('#start-snake');
 const game = document.querySelector('.game');
 
-btnStartSnake.addEventListener('click', () => {
+btnStartSnake.addEventListener('click', (e) => {
   btnStartSnake.classList.add('hide');
+
   initGame(game, 16);
 });
 
 function initGame(container, grid) {
-  const width = grid * 25;
-  const height = grid * 30;
+  const clientHeight = document.documentElement.clientHeight;
+  const clientWidth = document.documentElement.clientWidth;
+
+  let width = grid * 30;
+  let height = grid * 40;
   const colorSnake = '#204051';
   const colorFood = '#ff0000';
   const fpsBase = 5;
+
+  if (clientWidth < 768) {
+    width = clientWidth - (clientWidth % grid);
+  }
+
+  if (clientHeight < 1024 && clientWidth < 768) {
+    height = (clientHeight - (clientHeight % grid)) - (grid * 4);
+  }
 
   document.addEventListener('keydown', handleKeyPress);
   container.addEventListener('touchstart', handleTouchStart);
