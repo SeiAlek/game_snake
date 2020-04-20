@@ -1,18 +1,42 @@
 'use strict';
 
-const btnStartSnake = document.querySelector('#start-snake');
-const game = document.querySelector('.game');
+initGame();
 
-btnStartSnake.addEventListener('click', (e) => {
-  btnStartSnake.classList.add('hide');
+function initGame() {
+  const container = document.querySelector('.game');
 
-  initGame(game, 16);
-});
+  container.insertAdjacentHTML('afterbegin', `
+    <div class="game__container">
+      <img src="./images/snake.svg" class="game__image" alt="Snake Game" />
+      <input
+        id="user-nick-name"
+        type="text"
+        class="game__input"
+        pattern="[A-Za-z]{0,8}"
+        placeholder="Input Your Name"
+      />
+      <button id="start-snake" class="game__start-btn">Start</button>
+    </div>
+  `);
 
-function initGame(container, grid = 16) {
+  const btnStartSnake = document.querySelector('#start-snake');
+  const gameImage = document.querySelector('.game__image');
+  const userNickName = document.querySelector('#user-nick-name');
+
+  btnStartSnake.addEventListener('click', (e) => {
+    btnStartSnake.classList.add('hide');
+    gameImage.classList.add('hide');
+    userNickName.classList.add('hide');
+
+    game(container, userNickName.value);
+  });
+}
+
+function game(container, userNickName) {
   const clientHeight = document.documentElement.clientHeight;
   const clientWidth = document.documentElement.clientWidth;
 
+  const grid = 16;
   let width = grid * 30;
   let height = grid * 40;
   const colorSnake = '#204051';
@@ -36,12 +60,16 @@ function initGame(container, grid = 16) {
   let pause = false;
 
   const user = {
+    nickName: userNickName || 'NoName',
     score: 0,
     roundScore: 0,
+    distance: 0,
     live: 3,
 
     reset() {
       this.score = 0;
+      this.roundScore = 0;
+      this.distance = 0;
       this.live = 3;
     },
   };
@@ -64,6 +92,7 @@ function initGame(container, grid = 16) {
     moving() {
       this.x += snake.dx;
       this.y += snake.dy;
+      user.distance += 1;
 
       if (this.x < 0) {
         this.x = canvas.width - grid;
@@ -122,7 +151,7 @@ function initGame(container, grid = 16) {
       this.x = 160;
       this.y = 160;
       this.cells = [];
-      this.length = 4;
+      this.length = 14;
       this.dx = grid;
       this.dy = 0;
     },
@@ -293,10 +322,14 @@ function initGame(container, grid = 16) {
   }
 
   function drawControlPanel() {
+    const printedName = (user.nickName.length > 8)
+      ? user.nickName.slice(0, 5) + '...'
+      : user.nickName;
+
     container.insertAdjacentHTML('afterbegin', `
       <section class="game__control control">
         <div class="control__score">
-          Score:&nbsp;
+          ${printedName}:&nbsp;
           <span class="control__score-value">${user.score}</span>
         </div>
         <div class="control__buttons">
@@ -433,7 +466,7 @@ function initGame(container, grid = 16) {
   }
 
   function pauseKeys(e) {
-    if (e.keyCode === 80 || e.keyCode === 32) {
+    if (e.keyCode === 80) {
       pauseGame();
     }
   }
@@ -448,7 +481,9 @@ function initGame(container, grid = 16) {
 
   function endGame() {
     const controlPanel = container.querySelector('.control');
+    const btnStartSnake = document.querySelector('#start-snake');
 
+    saveScores();
     canvas.remove();
     controlPanel.remove();
     btnStartSnake.classList.remove('hide');
@@ -460,6 +495,87 @@ function initGame(container, grid = 16) {
         You result: ${user.score}!
       </div>
     `);
+
+    printHighScoresTable();
+  }
+
+  function saveScores() {
+    const highScores = JSON.parse(localStorage.getItem('snake')) || {};
+
+    const userResult = {
+      nickName: user.nickName,
+      score: user.score,
+      distance: user.distance,
+      date: Date.now(),
+    };
+
+    highScores[userResult.date] = userResult;
+
+    const highScoresArray = Object.entries(highScores)
+      .sort((a, b) => sortHighScores(a[1], b[1]));
+
+    const newHighScores = {};
+
+    for (let i = 0; i < highScoresArray.length; i++) {
+      if (i > 4) {
+        break;
+      }
+
+      const scoreName = highScoresArray[i][0];
+      const scoreValue = highScoresArray[i][1];
+
+      newHighScores[scoreName] = scoreValue;
+    }
+
+    localStorage.setItem('snake', JSON.stringify(newHighScores));
+  }
+
+  function printHighScoresTable() {
+    let highScores = Object.entries(
+      JSON.parse(localStorage.getItem('snake')
+      ));
+
+    highScores = highScores.sort((a, b) => sortHighScores(a[1], b[1]));
+
+    container.insertAdjacentHTML('beforeend', `
+      <div class="game__container">
+        <table class="game__high-score">
+          <tr>
+            <th>Date</th>
+            <th>Nick</th>
+            <th>Score</th>
+          </tr>
+          ${highScores.map(item => {
+            const row = `
+              <tr>
+                <td>
+                  ${new Date(item[1].date).getDate()}.
+
+                  ${new Date(item[1].date).getMonth() + 1}.
+                  ${new Date(item[1].date).getFullYear()}
+                </td>
+                <td>
+                  ${item[1].nickName}
+                </td>
+                <td>
+                  ${item[1].score}
+                </td>
+              </tr>
+            `;
+
+            return row;
+          })}
+        </table>
+      </div>
+    `);
+  }
+
+  function sortHighScores(a, b) {
+    if (a.score !== b.score) {
+      return b.score - a.score;
+    }
+
+    return b.date - a.date;
   }
 
   function popup() {

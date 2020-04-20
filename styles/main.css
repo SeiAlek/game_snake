@@ -28,7 +28,7 @@ h1 {
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
-  height: 100vh;
+  min-height: 100vh;
   margin: auto; }
 
 h1 {
@@ -40,9 +40,6 @@ h1 {
   @media screen and (max-width: 768px) {
     .game__control {
       margin: 6px 0; } }
-
-.game__image {
-  min-width: 300px; }
 
 .game__congrat {
   text-align: center;
@@ -67,6 +64,25 @@ h1 {
   background-repeat: no-repeat;
   background-size: contain; }
 
+.game__container {
+  padding: 0 32px;
+  text-align: center; }
+
+.game__input {
+  width: 100%;
+  padding: 8px 16px;
+  font-size: 20px;
+  text-align: center;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  border: 1px solid #204051;
+  border-radius: 8px;
+  -webkit-transition: -webkit-box-shadow 0.3s;
+  transition: -webkit-box-shadow 0.3s;
+  transition: box-shadow 0.3s;
+  transition: box-shadow 0.3s, -webkit-box-shadow 0.3s;
+  outline: none; }
+
 .game__start-btn {
   display: block;
   width: 100%;
@@ -90,6 +106,26 @@ h1 {
     -webkit-box-shadow: 0 0 48px rgba(32, 64, 81, 0.8);
             box-shadow: 0 0 48px rgba(32, 64, 81, 0.8); }
 
+.game__high-score {
+  width: 100%;
+  margin: 48px 0;
+  text-align: center;
+  background-color: #204051;
+  -webkit-box-shadow: 0 0 48px #cae8d5;
+          box-shadow: 0 0 48px #cae8d5;
+  border-radius: 8px; }
+  .game__high-score th {
+    padding: 8px 16px;
+    color: #cae8d5;
+    background-color: #204051; }
+  .game__high-score tr:nth-child(odd) {
+    background-color: #3b6978; }
+  .game__high-score tr:nth-child(even) {
+    background-color: #84a9ac; }
+  .game__high-score td {
+    padding: 4px 8px;
+    border-radius: 4px; }
+
 h1 {
   font-family: "Roboto", sans-serif;
   font-weight: 400; }
@@ -111,6 +147,9 @@ h1 {
     .control {
       gap: 16px;
       font-size: 18px; } }
+  @media screen and (max-width: 360px) {
+    .control {
+      gap: 4px; } }
   .control__score {
     display: -webkit-box;
     display: -ms-flexbox;
@@ -142,6 +181,11 @@ h1 {
     border: none;
     outline: none;
     cursor: pointer; }
+    @media screen and (max-width: 360px) {
+      .control__button {
+        height: 24px;
+        width: 24px;
+        margin: 0 4px; } }
   .control__pause {
     background-image: url(../images/icons/pause.svg); }
     .control__pause--active {
@@ -165,6 +209,10 @@ h1 {
     background-position: center;
     background-size: contain;
     background-repeat: no-repeat; }
+    @media screen and (max-width: 360px) {
+      .control__heart {
+        height: 24px;
+        width: 24px; } }
   .control__heart-alive {
     background-image: url(../images/icons/heart.svg); }
   .control__heart-broken {
@@ -178,8 +226,7 @@ h1 {
   position: absolute;
   left: 0;
   right: 0;
-  top: 0;
-  bottom: 0;
+  height: 100%;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
