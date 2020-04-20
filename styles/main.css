@@ -35,52 +35,11 @@ h1 {
   font-family: "Roboto", sans-serif;
   font-weight: 400; }
 
-.game__score-panel {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-pack: justify;
-      -ms-flex-pack: justify;
-          justify-content: space-between;
-  margin: 0 0 32px;
-  padding: 8px 16px;
-  -webkit-box-sizing: border-box;
-          box-sizing: border-box;
-  -webkit-box-shadow: 0 0 48px rgba(32, 64, 81, 0.3) inset;
-          box-shadow: 0 0 48px rgba(32, 64, 81, 0.3) inset;
-  background-color: #204051;
-  border-radius: 8px;
-  font-size: 24px;
-  color: #cae8d5; }
+.game__control {
+  margin: 0 0 32px; }
   @media screen and (max-width: 768px) {
-    .game__score-panel {
+    .game__control {
       margin: 6px 0; } }
-
-.game__score--center {
-  width: 100%;
-  text-align: center;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center; }
-
-.game__live {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex; }
-
-.game__heart {
-  height: 32px;
-  width: 32px;
-  margin-left: 4px;
-  background-position: center;
-  background-size: contain;
-  background-repeat: no-repeat; }
-
-.game__heart-alive {
-  background-image: url(../images/heart.svg); }
-
-.game__heart-broken {
-  background-image: url(../images/heart-broken.svg); }
 
 .game__image {
   min-width: 300px; }
@@ -128,6 +87,126 @@ h1 {
     color: #204051;
     -webkit-box-shadow: 0 0 48px rgba(32, 64, 81, 0.8);
             box-shadow: 0 0 48px rgba(32, 64, 81, 0.8); }
+
+h1 {
+  font-family: "Roboto", sans-serif;
+  font-weight: 400; }
+
+.control {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 32px;
+  padding: 8px 16px;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  -webkit-box-shadow: 0 0 48px rgba(32, 64, 81, 0.3) inset;
+          box-shadow: 0 0 48px rgba(32, 64, 81, 0.3) inset;
+  background-color: #204051;
+  border-radius: 8px;
+  font-size: 24px;
+  color: #cae8d5; }
+  .control__score--center {
+    width: 100%;
+    text-align: center;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center; }
+  .control__buttons {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center; }
+  .control__button {
+    height: 32px;
+    width: 32px;
+    margin: 0 8px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer; }
+  .control__pause {
+    background-image: url(../images/icons/pause.svg); }
+    .control__pause--active {
+      background-image: url(../images/icons/play.svg); }
+  .control__restart {
+    background-image: url(../images/icons/restart.svg); }
+  .control__live {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    -webkit-box-pack: end;
+        -ms-flex-pack: end;
+            justify-content: flex-end; }
+  .control__heart {
+    height: 32px;
+    width: 32px;
+    margin-left: 4px;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat; }
+  .control__heart-alive {
+    background-image: url(../images/icons/heart.svg); }
+  .control__heart-broken {
+    background-image: url(../images/icons/heart-broken.svg); }
+
+h1 {
+  font-family: "Roboto", sans-serif;
+  font-weight: 400; }
+
+.popup {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  background-color: rgba(32, 64, 81, 0.8);
+  z-index: 1000; }
+  .popup__container {
+    padding: 32px 64px;
+    text-align: center;
+    color: #cae8d5;
+    -webkit-box-shadow: 0 0 48px #cae8d5;
+            box-shadow: 0 0 48px #cae8d5;
+    background-color: #204051;
+    border: 1px solid #204051;
+    border-radius: 8px; }
+  .popup__button {
+    padding: 4px 32px;
+    color: #cae8d5;
+    -webkit-box-shadow: 0 0 48px rgba(32, 64, 81, 0.8);
+            box-shadow: 0 0 48px rgba(32, 64, 81, 0.8);
+    background-color: #3b6978;
+    border-radius: 4px;
+    border-color: transparent;
+    -webkit-transition: -webkit-box-shadow 0.3s;
+    transition: -webkit-box-shadow 0.3s;
+    transition: box-shadow 0.3s;
+    transition: box-shadow 0.3s, -webkit-box-shadow 0.3s;
+    cursor: pointer; }
+    .popup__button:hover, .popup__button:focus {
+      -webkit-box-shadow: 0 0 8px #cae8d5;
+              box-shadow: 0 0 8px #cae8d5; }
+    .popup__button--cancel {
+      background-color: red; }
+    .popup__button--apply {
+      background-color: green; }
 
 .hide {
   display: none; }

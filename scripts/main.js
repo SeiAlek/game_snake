@@ -17,7 +17,7 @@ function initGame(container, grid = 16) {
   let height = grid * 40;
   const colorSnake = '#204051';
   const colorFood = '#ff0000';
-  const fpsBase = 5;
+  const fpsBase = 3;
 
   if (clientWidth < 768) {
     width = clientWidth - (clientWidth % grid);
@@ -27,20 +27,24 @@ function initGame(container, grid = 16) {
     height = (clientHeight - (clientHeight % grid)) - (grid * 6);
   }
 
-  document.addEventListener('keydown', handleKeyPress);
-  container.addEventListener('touchstart', handleTouchStart);
-  container.addEventListener('touchmove', handleTouch);
-  container.addEventListener('touchend', handleTouchEnd);
-
   canvasInit();
 
   const canvas = container.querySelector('.game__field');
   const context = canvas.getContext('2d');
 
-  let fps = fpsBase;
-  let score = 0;
-  let live = 3;
+  let fps = fpsBase / 2;
   let cooldown = false;
+  let pause = false;
+
+  const user = {
+    score: 0,
+    live: 3,
+
+    reset() {
+      this.score = 0;
+      this.live = 3;
+    },
+  };
 
   const swipe = {
     threshold: grid * 2,
@@ -101,7 +105,7 @@ function initGame(container, grid = 16) {
     checkAppleCollision(cell) {
       if (cell.x === apple.x && cell.y === apple.y) {
         this.length++;
-        updateScore(score);
+        updateScore(user.score);
         apple.reset();
       }
     },
@@ -136,11 +140,23 @@ function initGame(container, grid = 16) {
     },
   };
 
-  resetGame();
-  drawScorePanel(score, live);
+  startGame();
+  drawControlPanel();
   loop();
 
+  document.addEventListener('keydown', handleKeyDown);
+  container.addEventListener('touchstart', handleTouchStart);
+  container.addEventListener('touchmove', handleTouch);
+  container.addEventListener('touchend', handleTouchEnd);
+
+  document.addEventListener('click', pauseGame);
+  document.addEventListener('click', initRestartGame);
+
   function loop() {
+    if (pause) {
+      return;
+    }
+
     setTimeout(function() {
       requestAnimationFrame(loop);
       clearField();
@@ -151,9 +167,9 @@ function initGame(container, grid = 16) {
     }, 1000 / fps);
   }
 
-  function handleKeyPress(e) {
+  function handleKeyDown(e) {
     if (cooldown) {
-      return false;
+      return;
     }
 
     if ((e.key === 'ArrowUp' || e.keyCode === 87) && (snake.dy === 0)) {
@@ -176,7 +192,7 @@ function initGame(container, grid = 16) {
 
     setTimeout(() => {
       cooldown = false;
-    }, 1000 / fps);
+    }, 1000 / (fps * 2));
   }
 
   function handleTouchStart(e) {
@@ -257,46 +273,52 @@ function initGame(container, grid = 16) {
     `);
   }
 
-  function drawScorePanel() {
+  function drawControlPanel() {
     container.insertAdjacentHTML('afterbegin', `
-      <section class="game__score-panel">
-        <div class="game__score">
+      <section class="game__control control">
+        <div class="control__score">
           Score:
-          <span class="game__score-value">${score}</span>
+          <span class="control__score-value">${user.score}</span>
         </div>
-        <div class="game__live">
-          ${drawHeart(live)}
+        <div class="control__buttons">
+          <button class="control__button control__restart"></button>
+          <button class="control__button control__pause"></button>
+        </div>
+        <div class="control__live">
+          ${drawHeart(user.live)}
         </div>
       </section>
     `);
   }
 
   function updateScore() {
-    const value = container.querySelector('.game__score-value');
+    const value = container.querySelector('.control__score-value');
 
-    score++;
-    value.innerHTML = score;
+    user.score++;
+    value.innerHTML = user.score;
     updateSpeed();
   }
 
   function updateLive() {
-    const value = container.querySelector('.game__live');
+    const value = container.querySelector('.control__live');
 
-    snake.reset();
-    apple.reset();
-    updateSpeed(fpsBase);
+    resetRound();
 
-    live--;
-    value.innerHTML = drawHeart(live);
+    user.live--;
+    value.innerHTML = drawHeart(user.live);
 
-    if (live === 0) {
+    if (user.live === 0) {
       endGame();
     }
   }
 
   function drawHeart(qty) {
-    const heartAlive = '<div class="game__heart game__heart-alive"></div>';
-    const heartBroken = '<div class="game__heart game__heart-broken"></div>';
+    const heartAlive = `
+      <div class="control__heart control__heart-alive"></div>
+    `;
+    const heartBroken = `
+      <div class="control__heart control__heart-broken"></div>
+    `;
     const lives = heartAlive.repeat(qty);
     const broken = heartBroken.repeat(3 - qty);
 
@@ -308,7 +330,7 @@ function initGame(container, grid = 16) {
       fps = rate;
     }
 
-    if (score % 5 === 0) {
+    if (user.score % 5 === 0) {
       fps++;
     }
   }
@@ -322,39 +344,111 @@ function initGame(container, grid = 16) {
     return randomCoord;
   }
 
-  function resetGame() {
-    const congrat = container.querySelector('.game__congrat');
-    const scorePanel = container.querySelector('.game__score-panel');
-
-    if (congrat) {
-      congrat.remove();
-    }
-
-    if (scorePanel) {
-      scorePanel.remove();
-    }
-
+  function resetRound() {
     fps = fpsBase;
-    score = 0;
-    live = 3;
 
     apple.reset();
     snake.reset();
   }
 
+  function initRestartGame(e) {
+    if (!e.target.closest('.control__restart')) {
+      return;
+    }
+    popup();
+    confirmRestartGame();
+  }
+
+  function confirmRestartGame() {
+    const popupBlock = document.querySelector('.popup');
+
+    popupBlock.addEventListener('click', (e) => {
+      if (e.target.closest('.popup__button--cancel')) {
+        popupBlock.remove();
+        pause = false;
+        loop();
+
+        return;
+      }
+
+      if (e.target.closest('.popup__button--apply')) {
+        startGame();
+      }
+    });
+  }
+
+  function startGame() {
+    const popupBlock = document.querySelector('.popup');
+    const congrat = container.querySelector('.game__congrat');
+    const score = container.querySelector('.control__score-value');
+    const live = container.querySelector('.control__live');
+
+    if (congrat) {
+      congrat.remove();
+    }
+
+    fps = fpsBase;
+
+    user.reset();
+    apple.reset();
+    snake.reset();
+
+    if (score) {
+      score.innerHTML = user.score;
+    }
+
+    if (live) {
+      live.innerHTML = drawHeart(user.live);
+    }
+
+    if (popupBlock) {
+      popupBlock.remove();
+    }
+
+    pause = false;
+    loop();
+  }
+
+  function pauseGame(e) {
+    if (!e.target.closest('.control__pause')) {
+      return;
+    }
+
+    const controlBtn = container.querySelector('.control__pause');
+
+    controlBtn.classList.toggle('control__pause--active');
+    pause = !pause;
+    loop();
+  }
+
   function endGame() {
-    const scoreBlock = container.querySelector('.game__score');
-    const liveBlock = container.querySelector('.game__live');
+    const controlPanel = container.querySelector('.control');
 
     canvas.remove();
-    liveBlock.remove();
-    scoreBlock.classList.add('game__score--center');
+    controlPanel.remove();
     btnStartSnake.classList.remove('hide');
 
     container.insertAdjacentHTML('afterbegin', `
       <div class="game__congrat">
         <img src="./images/snake.svg" class="game__image">
         <h2>Congratulation!</h2>
+        You result: ${user.score}!
+      </div>
+    `);
+  }
+
+  function popup() {
+    pause = true;
+
+    container.insertAdjacentHTML('beforebegin', `
+      <div class="game__popup popup">
+        <div class="popup__container">
+          <h2 class="popup__header">Are you sure?</h2>
+          <div class="popup__buttons">
+            <button class="popup__button popup__button--cancel">No</button>
+            <button class="popup__button popup__button--apply">Yes</button>
+          </div>
+        </div>
       </div>
     `);
   }
