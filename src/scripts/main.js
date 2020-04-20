@@ -17,7 +17,7 @@ function initGame(container, grid = 16) {
   let height = grid * 40;
   const colorSnake = '#204051';
   const colorFood = '#ff0000';
-  const fpsBase = 5;
+  const fpsBase = 3;
 
   if (clientWidth < 768) {
     width = clientWidth - (clientWidth % grid);
@@ -32,7 +32,7 @@ function initGame(container, grid = 16) {
   const canvas = container.querySelector('.game__field');
   const context = canvas.getContext('2d');
 
-  let fps = fpsBase;
+  let fps = fpsBase / 2;
   let cooldown = false;
   let pause = false;
 
@@ -140,17 +140,17 @@ function initGame(container, grid = 16) {
     },
   };
 
-  resetGame();
-  drawControlPanel(user.score, user.live);
+  startGame();
+  drawControlPanel();
   loop();
 
-  document.addEventListener('keydown', handleKeyPress);
+  document.addEventListener('keydown', handleKeyDown);
   container.addEventListener('touchstart', handleTouchStart);
   container.addEventListener('touchmove', handleTouch);
   container.addEventListener('touchend', handleTouchEnd);
 
   document.addEventListener('click', pauseGame);
-  document.addEventListener('click', restartGame);
+  document.addEventListener('click', initRestartGame);
 
   function loop() {
     if (pause) {
@@ -167,9 +167,9 @@ function initGame(container, grid = 16) {
     }, 1000 / fps);
   }
 
-  function handleKeyPress(e) {
+  function handleKeyDown(e) {
     if (cooldown) {
-      return false;
+      return;
     }
 
     if ((e.key === 'ArrowUp' || e.keyCode === 87) && (snake.dy === 0)) {
@@ -192,7 +192,7 @@ function initGame(container, grid = 16) {
 
     setTimeout(() => {
       cooldown = false;
-    }, 1000 / fps);
+    }, 1000 / (fps * 2));
   }
 
   function handleTouchStart(e) {
@@ -302,9 +302,7 @@ function initGame(container, grid = 16) {
   function updateLive() {
     const value = container.querySelector('.control__live');
 
-    snake.reset();
-    apple.reset();
-    updateSpeed(fpsBase);
+    resetRound();
 
     user.live--;
     value.innerHTML = drawHeart(user.live);
@@ -346,36 +344,22 @@ function initGame(container, grid = 16) {
     return randomCoord;
   }
 
-  function resetGame() {
-    const congrat = container.querySelector('.game__congrat');
-    const scorePanel = container.querySelector('.control');
-
-    if (congrat) {
-      congrat.remove();
-    }
-
-    if (scorePanel) {
-      scorePanel.remove();
-    }
-
+  function resetRound() {
     fps = fpsBase;
 
-    user.reset();
     apple.reset();
     snake.reset();
   }
 
-  function restartGame(e) {
+  function initRestartGame(e) {
     if (!e.target.closest('.control__restart')) {
       return;
     }
-
+    popup();
     confirmRestartGame();
   }
 
   function confirmRestartGame() {
-    popup();
-
     const popupBlock = document.querySelector('.popup');
 
     popupBlock.addEventListener('click', (e) => {
@@ -388,33 +372,41 @@ function initGame(container, grid = 16) {
       }
 
       if (e.target.closest('.popup__button--apply')) {
-        const congrat = container.querySelector('.game__congrat');
-        const score = container.querySelector('.control__score-value');
-        const live = container.querySelector('.control__live');
-
-        if (congrat) {
-          congrat.remove();
-        }
-
-        fps = fpsBase;
-
-        user.reset();
-        apple.reset();
-        snake.reset();
-
-        if (score) {
-          score.innerHTML = user.score;
-        }
-
-        if (live) {
-          live.innerHTML = drawHeart(user.live);
-        }
-
-        popupBlock.remove();
-        pause = false;
-        loop();
+        startGame();
       }
     });
+  }
+
+  function startGame() {
+    const popupBlock = document.querySelector('.popup');
+    const congrat = container.querySelector('.game__congrat');
+    const score = container.querySelector('.control__score-value');
+    const live = container.querySelector('.control__live');
+
+    if (congrat) {
+      congrat.remove();
+    }
+
+    fps = fpsBase;
+
+    user.reset();
+    apple.reset();
+    snake.reset();
+
+    if (score) {
+      score.innerHTML = user.score;
+    }
+
+    if (live) {
+      live.innerHTML = drawHeart(user.live);
+    }
+
+    if (popupBlock) {
+      popupBlock.remove();
+    }
+
+    pause = false;
+    loop();
   }
 
   function pauseGame(e) {
@@ -430,18 +422,17 @@ function initGame(container, grid = 16) {
   }
 
   function endGame() {
-    const scoreBlock = container.querySelector('.game__score');
-    const liveBlock = container.querySelector('.game__live');
+    const controlPanel = container.querySelector('.control');
 
     canvas.remove();
-    liveBlock.remove();
-    scoreBlock.classList.add('game__score--center');
+    controlPanel.remove();
     btnStartSnake.classList.remove('hide');
 
     container.insertAdjacentHTML('afterbegin', `
       <div class="game__congrat">
         <img src="./images/snake.svg" class="game__image">
         <h2>Congratulation!</h2>
+        You result: ${user.score}!
       </div>
     `);
   }
