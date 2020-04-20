@@ -33,7 +33,6 @@ function initGame(container, grid = 16) {
   const context = canvas.getContext('2d');
 
   let fps = fpsBase;
-  let cooldown = false;
   let pause = false;
 
   const user = {
@@ -140,6 +139,8 @@ function initGame(container, grid = 16) {
     },
   };
 
+  const setNewVelocity = trottle(setVelocity, 1000 / fps);
+
   startGame();
   drawControlPanel();
   loop();
@@ -151,6 +152,36 @@ function initGame(container, grid = 16) {
 
   document.addEventListener('click', pauseGame);
   document.addEventListener('click', initRestartGame);
+
+  function trottle(f, delay) {
+    let isBussy = false;
+    let savedCoords = null;
+
+    return function wrapper(...args) {
+      if (isBussy) {
+        savedCoords = args;
+
+        return;
+      }
+
+      isBussy = true;
+      savedCoords = null;
+      f(...args);
+
+      setTimeout(() => {
+        isBussy = false;
+
+        if (savedCoords) {
+          wrapper(...savedCoords);
+        }
+      }, delay);
+    };
+  }
+
+  function setVelocity(x, y) {
+    snake.dx = x;
+    snake.dy = y;
+  }
 
   function loop() {
     if (pause) {
@@ -168,38 +199,24 @@ function initGame(container, grid = 16) {
   }
 
   function handleKeyDown(e) {
-    if (cooldown) {
-      return;
-    }
-
     if ((e.key === 'ArrowUp' || e.keyCode === 87) && (snake.dy === 0)) {
-      snake.setVelocity(0, -grid);
+      setNewVelocity(0, -grid);
     }
 
     if ((e.key === 'ArrowDown' || e.keyCode === 83) && (snake.dy === 0)) {
-      snake.setVelocity(0, grid);
+      setNewVelocity(0, grid);
     }
 
     if ((e.key === 'ArrowLeft' || e.keyCode === 65) && (snake.dx === 0)) {
-      snake.setVelocity(-grid, 0);
+      setNewVelocity(-grid, 0);
     }
 
     if ((e.key === 'ArrowRight' || e.keyCode === 68) && (snake.dx === 0)) {
-      snake.setVelocity(grid, 0);
+      setNewVelocity(grid, 0);
     }
-
-    cooldown = true;
-
-    setTimeout(() => {
-      cooldown = false;
-    }, 1000 / (fps * 2));
   }
 
   function handleTouchStart(e) {
-    if (cooldown) {
-      return false;
-    }
-
     const x = e.targetTouches[0].screenX;
     const y = e.targetTouches[0].screenY;
 
@@ -218,7 +235,7 @@ function initGame(container, grid = 16) {
       && (snake.dx === 0)
     ) {
       swipe.setRotationCoords(actualX, actualY);
-      snake.setVelocity(-grid, 0);
+      setNewVelocity(-grid, 0);
 
       return;
     }
@@ -228,7 +245,7 @@ function initGame(container, grid = 16) {
       && (snake.dx === 0)
     ) {
       swipe.setRotationCoords(actualX, actualY);
-      snake.setVelocity(grid, 0);
+      setNewVelocity(grid, 0);
 
       return;
     }
@@ -238,7 +255,7 @@ function initGame(container, grid = 16) {
       && (snake.dy === 0)
     ) {
       swipe.setRotationCoords(actualX, actualY);
-      snake.setVelocity(0, -grid);
+      setNewVelocity(0, -grid);
 
       return;
     }
@@ -248,7 +265,7 @@ function initGame(container, grid = 16) {
       && (snake.dy === 0)
     ) {
       swipe.setRotationCoords(actualX, actualY);
-      snake.setVelocity(0, grid);
+      setNewVelocity(0, grid);
     }
   }
 
