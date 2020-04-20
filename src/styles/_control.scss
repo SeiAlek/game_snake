@@ -17,10 +17,14 @@
     font-size: 18px;
   }
 
+  @media screen and (max-width: 360px) {
+    gap: ($unit / 4);
+  }
+
   &__score {
     display: flex;
     align-items: center;
-    
+
     &--center {
       width: 100%;
       text-align: center;
@@ -44,6 +48,12 @@
     border: none;
     outline: none;
     cursor: pointer;
+
+    @media screen and (max-width: 360px) {
+      height: ($unit * 1.5);
+      width: ($unit * 1.5);
+      margin: 0 ($unit / 4);
+    }
   }
 
   &__pause {
@@ -71,6 +81,11 @@
     background-position: center;
     background-size: contain;
     background-repeat: no-repeat;
+
+    @media screen and (max-width: 360px) {
+      height: ($unit * 1.5);
+      width: ($unit * 1.5);
+    }
   }
 
   &__heart-alive {

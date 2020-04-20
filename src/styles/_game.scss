@@ -10,10 +10,6 @@
     }
   }
 
-  &__image {
-    min-width: 300px;
-  }
-
   &__congrat {
     text-align: center;
     text-shadow: 1px 1px 8px $c-dark;
@@ -38,6 +34,23 @@
     background-size: contain;
   }
 
+  &__container {
+    padding: 0 ($unit * 2);
+    text-align: center;
+  }
+
+  &__input {
+    width: 100%;
+    padding: ($unit / 2) ($unit);
+    font-size: 20px;
+    text-align: center;
+    box-sizing: border-box;
+    border: 1px solid $c-dark;
+    border-radius: ($unit / 2);
+    transition: box-shadow 0.3s;
+    outline: none;
+  }
+
   &__start-btn {
     display: block;
     width: 100%;
@@ -58,6 +71,34 @@
       background-color: $c-blue;
       color: $c-dark;
       box-shadow: 0 0 ($unit * 3) rgba(32, 64, 81, 0.8);
+    }
+  }
+
+  &__high-score {
+    width: 100%;
+    margin: ($unit * 3) 0;
+    text-align: center;
+    background-color: $c-dark;
+    box-shadow: 0 0 ($unit * 3) rgba(202, 232, 213, 1);
+    border-radius: ($unit / 2);
+
+    & th {
+      padding: ($unit / 2) ($unit);
+      color: $c-light;
+      background-color: $c-dark;
+    }
+
+    & tr:nth-child(odd) {
+      background-color: $c-navy;
+    }
+
+    & tr:nth-child(even) {
+      background-color: $c-blue;
+    }
+
+    & td {
+      padding: ($unit / 4) ($unit / 2);
+      border-radius: ($unit / 4);
     }
   }
 }
