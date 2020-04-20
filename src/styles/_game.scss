@@ -2,51 +2,12 @@
 
 .game {
 
-  &__score-panel {
-    display: flex;
-    justify-content: space-between;
+  &__control {
     margin: 0 0 ($unit * 2);
-    padding: ($unit / 2) ($unit);
-    box-sizing: border-box;
-    box-shadow: 0 0 ($unit * 3) rgba(32, 64, 81, 0.3) inset;
-    background-color: $c-dark;
-    border-radius: ($unit / 2);
-    font-size: 24px;
-    color: $c-light;
 
     @media screen and (max-width: 768px) {
       margin: 6px 0;
     }
-  }
-
-  &__score {
-    &--center {
-      width: 100%;
-      text-align: center;
-      justify-content: center;
-    }
-  }
-
-  &__live {
-    display: flex;
-  }
-
-  &__heart {
-    height: ($unit * 2);
-    width: ($unit * 2);
-    margin-left: ($unit / 4);
-    background-position: center;
-    background-size: contain;
-    background-repeat: no-repeat;
-  }
-
-  &__heart-alive {
-    background-image: url(../images/heart.svg);
-
-  }
-
-  &__heart-broken {
-    background-image: url(../images/heart-broken.svg);
   }
 
   &__image {
