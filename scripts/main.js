@@ -32,7 +32,7 @@ function initGame(container, grid = 16) {
   const canvas = container.querySelector('.game__field');
   const context = canvas.getContext('2d');
 
-  let fps = fpsBase / 2;
+  let fps = fpsBase;
   let cooldown = false;
   let pause = false;
 
@@ -252,7 +252,7 @@ function initGame(container, grid = 16) {
     }
   }
 
-  function handleTouchEnd(e) {
+  function handleTouchEnd() {
     delete swipe.startX;
     delete swipe.startY;
   }
@@ -277,7 +277,7 @@ function initGame(container, grid = 16) {
     container.insertAdjacentHTML('afterbegin', `
       <section class="game__control control">
         <div class="control__score">
-          Score:
+          Score:&nbsp;
           <span class="control__score-value">${user.score}</span>
         </div>
         <div class="control__buttons">
@@ -325,11 +325,7 @@ function initGame(container, grid = 16) {
     return broken + lives;
   }
 
-  function updateSpeed(rate) {
-    if (rate) {
-      fps = rate;
-    }
-
+  function updateSpeed() {
     if (user.score % 5 === 0) {
       fps++;
     }
@@ -349,32 +345,6 @@ function initGame(container, grid = 16) {
 
     apple.reset();
     snake.reset();
-  }
-
-  function initRestartGame(e) {
-    if (!e.target.closest('.control__restart')) {
-      return;
-    }
-    popup();
-    confirmRestartGame();
-  }
-
-  function confirmRestartGame() {
-    const popupBlock = document.querySelector('.popup');
-
-    popupBlock.addEventListener('click', (e) => {
-      if (e.target.closest('.popup__button--cancel')) {
-        popupBlock.remove();
-        pause = false;
-        loop();
-
-        return;
-      }
-
-      if (e.target.closest('.popup__button--apply')) {
-        startGame();
-      }
-    });
   }
 
   function startGame() {
@@ -407,6 +377,32 @@ function initGame(container, grid = 16) {
 
     pause = false;
     loop();
+  }
+
+  function initRestartGame(e) {
+    if (!e.target.closest('.control__restart')) {
+      return;
+    }
+    popup();
+    confirmRestartGame();
+  }
+
+  function confirmRestartGame() {
+    const popupBlock = document.querySelector('.popup');
+
+    popupBlock.addEventListener('click', (e) => {
+      if (e.target.closest('.popup__button--cancel')) {
+        popupBlock.remove();
+        pause = false;
+        loop();
+
+        return;
+      }
+
+      if (e.target.closest('.popup__button--apply')) {
+        startGame();
+      }
+    });
   }
 
   function pauseGame(e) {
