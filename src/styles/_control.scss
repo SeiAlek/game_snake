@@ -12,7 +12,15 @@
   font-size: 24px;
   color: $c-light;
 
+  @media screen and (max-width: 768px) {
+    gap: ($unit);
+    font-size: 18px;
+  }
+
   &__score {
+    display: flex;
+    align-items: center;
+    
     &--center {
       width: 100%;
       text-align: center;
