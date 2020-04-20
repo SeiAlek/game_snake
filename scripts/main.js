@@ -37,6 +37,7 @@ function initGame(container, grid = 16) {
 
   const user = {
     score: 0,
+    roundScore: 0,
     live: 3,
 
     reset() {
@@ -150,7 +151,8 @@ function initGame(container, grid = 16) {
   container.addEventListener('touchmove', handleTouch);
   container.addEventListener('touchend', handleTouchEnd);
 
-  document.addEventListener('click', pauseGame);
+  document.addEventListener('click', pauseButton);
+  document.addEventListener('keydown', pauseKeys);
   document.addEventListener('click', initRestartGame);
 
   function trottle(f, delay) {
@@ -312,6 +314,7 @@ function initGame(container, grid = 16) {
     const value = container.querySelector('.control__score-value');
 
     user.score++;
+    user.roundScore++;
     value.innerHTML = user.score;
     updateSpeed();
   }
@@ -322,6 +325,7 @@ function initGame(container, grid = 16) {
     resetRound();
 
     user.live--;
+    user.roundScore = 0;
     value.innerHTML = drawHeart(user.live);
 
     if (user.live === 0) {
@@ -343,7 +347,7 @@ function initGame(container, grid = 16) {
   }
 
   function updateSpeed() {
-    if (user.score % 5 === 0) {
+    if (user.roundScore % 5 === 0) {
       fps++;
     }
   }
@@ -422,11 +426,19 @@ function initGame(container, grid = 16) {
     });
   }
 
-  function pauseGame(e) {
-    if (!e.target.closest('.control__pause')) {
-      return;
+  function pauseButton(e) {
+    if (e.target.closest('.control__pause')) {
+      pauseGame();
     }
+  }
 
+  function pauseKeys(e) {
+    if (e.keyCode === 80 || e.keyCode === 32) {
+      pauseGame();
+    }
+  }
+
+  function pauseGame(e) {
     const controlBtn = container.querySelector('.control__pause');
 
     controlBtn.classList.toggle('control__pause--active');
