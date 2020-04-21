@@ -491,8 +491,9 @@ function game(container, userNickName) {
   function endGame() {
     const controlPanel = container.querySelector('.control');
     const btnStartSnake = document.querySelector('#start-snake');
+    const userResult = {};
 
-    savingScores();
+    savingScores(userResult);
     canvas.remove();
     controlPanel.remove();
     btnStartSnake.classList.remove('hide');
@@ -501,22 +502,20 @@ function game(container, userNickName) {
       <div class="game__congrat">
         <img src="./images/snake.svg" class="game__image">
         <h2>Congratulation!</h2>
-        You result: ${user.score}!
+        You scored ${user.score} points!
       </div>
     `);
 
-    drawingHighScoresTable();
+    drawingHighScoresTable(userResult);
   }
 
-  function savingScores() {
+  function savingScores(userResult) {
     const highScores = JSON.parse(localStorage.getItem('snake')) || {};
 
-    const userResult = {
-      nickName: user.nickName,
-      score: user.score,
-      distance: user.distance,
-      date: Date.now(),
-    };
+    userResult.nickName = user.nickName;
+    userResult.score = user.score;
+    userResult.distance = user.distance;
+    userResult.date = Date.now();
 
     highScores[userResult.date] = userResult;
 
@@ -539,12 +538,22 @@ function game(container, userNickName) {
     localStorage.setItem('snake', JSON.stringify(newHighScores));
   }
 
-  function drawingHighScoresTable() {
+  function drawingHighScoresTable(userResult) {
     let highScores = Object.entries(
       JSON.parse(localStorage.getItem('snake')
       ));
 
     highScores = highScores.sort((a, b) => sortHighScores(a[1], b[1]));
+
+    const bestResultDate = highScores[0][1].date;
+
+    if (userResult.date === bestResultDate) {
+      const congrat = container.querySelector('.game__congrat');
+
+      congrat.insertAdjacentHTML('beforeend', `
+        <h2>You are the Best of the Best!</h2>
+      `);
+    }
 
     container.insertAdjacentHTML('beforeend', `
       <div class="game__high-score">
