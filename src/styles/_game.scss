@@ -75,6 +75,12 @@
   }
 
   &__high-score {
+    padding: 0 32px;
+    color: $c-navy;
+    text-align: center;
+  }
+
+  &__high-score-table {
     width: 100%;
     margin: ($unit * 3) 0;
     text-align: center;
@@ -99,6 +105,7 @@
     & td {
       padding: ($unit / 4) ($unit / 2);
       border-radius: ($unit / 4);
+      color: $c-dark;
     }
   }
 }

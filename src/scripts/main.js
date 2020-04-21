@@ -3,6 +3,8 @@
 initGame();
 
 function initGame() {
+  drawGameContainer();
+
   const container = document.querySelector('.game');
 
   container.insertAdjacentHTML('afterbegin', `
@@ -23,13 +25,29 @@ function initGame() {
   const gameImage = document.querySelector('.game__image');
   const userNickName = document.querySelector('#user-nick-name');
 
-  btnStartSnake.addEventListener('click', (e) => {
-    btnStartSnake.classList.add('hide');
-    gameImage.classList.add('hide');
-    userNickName.classList.add('hide');
-
+  btnStartSnake.addEventListener('click', e => {
+    eraisingStartElements();
     game(container, userNickName.value);
   });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      eraisingStartElements();
+      game(container, userNickName.value);
+    }
+  });
+
+  function drawGameContainer() {
+    document.body.insertAdjacentHTML('afterbegin', `
+      <div class="page__container game"></div>
+    `);
+  }
+
+  function eraisingStartElements() {
+    btnStartSnake.classList.add('hide');
+    erasing(gameImage);
+    erasing(userNickName);
+  }
 }
 
 function game(container, userNickName) {
@@ -151,7 +169,7 @@ function game(container, userNickName) {
       this.x = 160;
       this.y = 160;
       this.cells = [];
-      this.length = 14;
+      this.length = 4;
       this.dx = grid;
       this.dy = 0;
     },
@@ -172,8 +190,6 @@ function game(container, userNickName) {
   const setNewVelocity = trottle(setVelocity, 1000 / fps);
 
   startGame();
-  drawControlPanel();
-  loop();
 
   document.addEventListener('keydown', handleKeyDown);
   container.addEventListener('touchstart', handleTouchStart);
@@ -183,6 +199,21 @@ function game(container, userNickName) {
   document.addEventListener('click', pauseButton);
   document.addEventListener('keydown', pauseKeys);
   document.addEventListener('click', initRestartGame);
+
+  function loop() {
+    if (pause) {
+      return;
+    }
+
+    setTimeout(function() {
+      requestAnimationFrame(loop);
+      clearField();
+      snake.moving();
+      snake.handleLength();
+      apple.drawing();
+      snake.drawing();
+    }, 1000 / fps);
+  }
 
   function trottle(f, delay) {
     let isBussy = false;
@@ -212,21 +243,6 @@ function game(container, userNickName) {
   function setVelocity(x, y) {
     snake.dx = x;
     snake.dy = y;
-  }
-
-  function loop() {
-    if (pause) {
-      return;
-    }
-
-    setTimeout(function() {
-      requestAnimationFrame(loop);
-      clearField();
-      snake.moving();
-      snake.handleLength();
-      apple.drawing();
-      snake.drawing();
-    }, 1000 / fps);
   }
 
   function handleKeyDown(e) {
@@ -321,7 +337,7 @@ function game(container, userNickName) {
     `);
   }
 
-  function drawControlPanel() {
+  function drawingControlPanel() {
     const printedName = (user.nickName.length > 8)
       ? user.nickName.slice(0, 5) + '...'
       : user.nickName;
@@ -337,7 +353,7 @@ function game(container, userNickName) {
           <button class="control__button control__pause"></button>
         </div>
         <div class="control__live">
-          ${drawHeart(user.live)}
+          ${drawingHeart(user.live)}
         </div>
       </section>
     `);
@@ -359,14 +375,14 @@ function game(container, userNickName) {
 
     user.live--;
     user.roundScore = 0;
-    value.innerHTML = drawHeart(user.live);
+    value.innerHTML = drawingHeart(user.live);
 
     if (user.live === 0) {
       endGame();
     }
   }
 
-  function drawHeart(qty) {
+  function drawingHeart(qty = 0) {
     const heartAlive = `
       <div class="control__heart control__heart-alive"></div>
     `;
@@ -402,34 +418,25 @@ function game(container, userNickName) {
   }
 
   function startGame() {
+    const scoreTable = document.querySelector('.game__high-score');
     const popupBlock = document.querySelector('.popup');
     const congrat = container.querySelector('.game__congrat');
     const score = container.querySelector('.control__score-value');
     const live = container.querySelector('.control__live');
 
-    if (congrat) {
-      congrat.remove();
-    }
+    erasing(congrat);
+    erasing(score);
+    erasing(live);
+    erasing(popupBlock);
+    erasing(scoreTable);
 
     fps = fpsBase;
-
     user.reset();
     apple.reset();
     snake.reset();
-
-    if (score) {
-      score.innerHTML = user.score;
-    }
-
-    if (live) {
-      live.innerHTML = drawHeart(user.live);
-    }
-
-    if (popupBlock) {
-      popupBlock.remove();
-    }
-
     pause = false;
+
+    drawingControlPanel();
     loop();
   }
 
@@ -437,7 +444,7 @@ function game(container, userNickName) {
     if (!e.target.closest('.control__restart')) {
       return;
     }
-    popup();
+    drawingPopUp();
     confirmRestartGame();
   }
 
@@ -454,7 +461,9 @@ function game(container, userNickName) {
       }
 
       if (e.target.closest('.popup__button--apply')) {
-        startGame();
+        erasing(container);
+        erasing(popupBlock);
+        initGame();
       }
     });
   }
@@ -483,7 +492,7 @@ function game(container, userNickName) {
     const controlPanel = container.querySelector('.control');
     const btnStartSnake = document.querySelector('#start-snake');
 
-    saveScores();
+    savingScores();
     canvas.remove();
     controlPanel.remove();
     btnStartSnake.classList.remove('hide');
@@ -496,10 +505,10 @@ function game(container, userNickName) {
       </div>
     `);
 
-    printHighScoresTable();
+    drawingHighScoresTable();
   }
 
-  function saveScores() {
+  function savingScores() {
     const highScores = JSON.parse(localStorage.getItem('snake')) || {};
 
     const userResult = {
@@ -530,7 +539,7 @@ function game(container, userNickName) {
     localStorage.setItem('snake', JSON.stringify(newHighScores));
   }
 
-  function printHighScoresTable() {
+  function drawingHighScoresTable() {
     let highScores = Object.entries(
       JSON.parse(localStorage.getItem('snake')
       ));
@@ -538,36 +547,38 @@ function game(container, userNickName) {
     highScores = highScores.sort((a, b) => sortHighScores(a[1], b[1]));
 
     container.insertAdjacentHTML('beforeend', `
-      <div class="game__container">
-        <table class="game__high-score">
+      <div class="game__high-score">
+        <table class="game__high-score-table">
           <tr>
+            <th>N</th>
             <th>Date</th>
             <th>Nick</th>
             <th>Score</th>
           </tr>
-          ${highScores.map(item => {
-            const row = `
-              <tr>
-                <td>
-                  ${new Date(item[1].date).getDate()}.
-
-                  ${new Date(item[1].date).getMonth() + 1}.
-                  ${new Date(item[1].date).getFullYear()}
-                </td>
-                <td>
-                  ${item[1].nickName}
-                </td>
-                <td>
-                  ${item[1].score}
-                </td>
-              </tr>
-            `;
-
-            return row;
-          })}
+          ${highScores.map((item, i) => drawingRow(item, i))}
         </table>
       </div>
     `);
+
+    function drawingRow(item, i) {
+      const date = new Date(item[1].date);
+      const row = `
+        <tr>
+          <td>${i + 1}.</td>
+          <td>
+            ${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}
+          </td>
+          <td>
+            ${item[1].nickName}
+          </td>
+          <td>
+            ${item[1].score}
+          </td>
+        </tr>
+      `;
+
+      return row;
+    }
   }
 
   function sortHighScores(a, b) {
@@ -578,7 +589,7 @@ function game(container, userNickName) {
     return b.date - a.date;
   }
 
-  function popup() {
+  function drawingPopUp() {
     pause = true;
 
     container.insertAdjacentHTML('beforebegin', `
@@ -593,4 +604,14 @@ function game(container, userNickName) {
       </div>
     `);
   }
+}
+
+function erasing(element) {
+  if (element) {
+    element.remove();
+
+    return true;
+  }
+
+  return false;
 }
