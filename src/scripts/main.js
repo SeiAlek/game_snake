@@ -69,7 +69,8 @@ function game(container, userNickName) {
     height = (clientHeight - (clientHeight % grid)) - (grid * 6);
   }
 
-  canvasInit();
+  initCanvas();
+  initEventListeners();
 
   const canvas = container.querySelector('.game__field');
   const context = canvas.getContext('2d');
@@ -190,15 +191,6 @@ function game(container, userNickName) {
   const setNewVelocity = trottle(setVelocity, 1000 / fps);
 
   startGame();
-
-  document.addEventListener('keydown', handleKeyDown);
-  container.addEventListener('touchstart', handleTouchStart);
-  container.addEventListener('touchmove', handleTouch);
-  container.addEventListener('touchend', handleTouchEnd);
-
-  document.addEventListener('click', pauseButton);
-  document.addEventListener('keydown', pauseKeys);
-  document.addEventListener('click', initRestartGame);
 
   function loop() {
     if (pause) {
@@ -325,7 +317,7 @@ function game(container, userNickName) {
     context.clearRect(0, 0, canvas.width, canvas.height);
   }
 
-  function canvasInit() {
+  function initCanvas() {
     container.insertAdjacentHTML('afterbegin', `
       <div class="game__field-bg">
         <canvas
@@ -335,6 +327,18 @@ function game(container, userNickName) {
         ></canvas>
       </div>
     `);
+  }
+
+  function initEventListeners() {
+    document.addEventListener('keydown', handleKeyDown);
+
+    container.addEventListener('touchstart', handleTouchStart);
+    container.addEventListener('touchmove', handleTouch);
+    container.addEventListener('touchend', handleTouchEnd);
+
+    document.addEventListener('click', pauseButton);
+    document.addEventListener('keydown', pauseButton);
+    document.addEventListener('click', initRestartGame);
   }
 
   function drawingControlPanel() {
@@ -469,18 +473,18 @@ function game(container, userNickName) {
   }
 
   function pauseButton(e) {
+    e.preventDefault();
+
     if (e.target.closest('.control__pause')) {
-      pauseGame();
+      controlPause();
+    }
+
+    if (e.keyCode === 80 || e.code === 'Space') {
+      controlPause();
     }
   }
 
-  function pauseKeys(e) {
-    if (e.keyCode === 80) {
-      pauseGame();
-    }
-  }
-
-  function pauseGame(e) {
+  function controlPause(e) {
     const controlBtn = container.querySelector('.control__pause');
 
     controlBtn.classList.toggle('control__pause--active');
