@@ -1,6 +1,7 @@
 @import "utils";
 
 .game {
+  display: inline-block;
 
   &__control {
     margin: 0 0 ($unit * 2);
@@ -10,10 +11,24 @@
     }
   }
 
+  &__start {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__logo {
+    width: 80%;
+    margin: ($unit * 2) auto;
+  }
+
   &__congrat {
     text-align: center;
     text-shadow: 1px 1px 8px $c-dark;
     color: $c-light;
+  }
+
+  &__congrat-image {
+    max-width: 100px;
   }
 
   &__field {
@@ -27,7 +42,7 @@
     border-radius: ($unit / 2);
   }
 
-  &__field-bg {
+  &__field-wrapper {
     background-image: url(../images/snake.svg);
     background-position: center;
     background-repeat: no-repeat;
@@ -75,7 +90,6 @@
   }
 
   &__high-score {
-    padding: 0 32px;
     color: $c-navy;
     text-align: center;
   }
@@ -94,18 +108,18 @@
       background-color: $c-dark;
     }
 
-    & tr:nth-child(odd) {
-      background-color: $c-navy;
-    }
-
-    & tr:nth-child(even) {
-      background-color: $c-blue;
-    }
-
     & td {
       padding: ($unit / 4) ($unit / 2);
       border-radius: ($unit / 4);
       color: $c-dark;
     }
+  }
+
+  &__row {
+    background-color: $c-blue;
+  }
+
+  &__row-highlight {
+    background-color: $c-highlight;
   }
 }
