@@ -3,26 +3,12 @@
 initGame();
 
 function initGame() {
-  drawGameContainer();
-
   const container = document.querySelector('.game');
 
-  container.insertAdjacentHTML('afterbegin', `
-    <div class="game__container">
-      <img src="./images/snake.svg" class="game__image" alt="Snake Game" />
-      <input
-        id="user-nick-name"
-        type="text"
-        class="game__input"
-        pattern="[A-Za-z]{0,8}"
-        placeholder="Input Your Name"
-      />
-      <button id="start-snake" class="game__start-btn">Start</button>
-    </div>
-  `);
+  drawGameContainer();
 
   const btnStartSnake = document.querySelector('#start-snake');
-  const gameImage = document.querySelector('.game__image');
+  const gameStart = document.querySelector('.game__start');
   const userNickName = document.querySelector('#user-nick-name');
 
   btnStartSnake.addEventListener('click', e => {
@@ -38,14 +24,24 @@ function initGame() {
   });
 
   function drawGameContainer() {
-    document.body.insertAdjacentHTML('afterbegin', `
-      <div class="page__container game"></div>
-    `);
+    container.insertAdjacentHTML('afterbegin', `
+    <div class="game__start">
+      <img src="./images/snake.svg" class="game__logo" alt="Snake Game" />
+      <input
+        id="user-nick-name"
+        type="text"
+        class="game__input"
+        pattern="[A-Za-z]{0,8}"
+        placeholder="Input Your Name"
+      />
+    </div>
+    <button id="start-snake" class="game__start-btn">Start</button>
+  `);
   }
 
   function eraisingStartElements() {
     btnStartSnake.classList.add('hide');
-    erasing(gameImage);
+    erasing(gameStart);
     erasing(userNickName);
   }
 }
@@ -409,20 +405,23 @@ function game(container, userNickName) {
 
   function confirmRestartGame() {
     const popupBlock = document.querySelector('.popup');
+    const containerWrapper = document.querySelector('.game__field-wrapper');
+    const controlPanel = document.querySelector('.game__control');
 
-    popupBlock.addEventListener('click', (e) => {
-      if (e.target.closest('.popup__button--cancel')) {
-        popupBlock.remove();
-        pause = false;
-        loop();
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('.popup__button--apply')) {
+        erasing(containerWrapper);
+        erasing(controlPanel);
+        erasing(popupBlock);
+        initGame();
 
         return;
       }
 
-      if (e.target.closest('.popup__button--apply')) {
-        erasing(container);
+      if (e.target.closest('.popup__button--cancel')) {
         erasing(popupBlock);
-        initGame();
+        pause = false;
+        loop();
       }
     });
   }
@@ -437,13 +436,14 @@ function game(container, userNickName) {
 
   function endGame() {
     const controlPanel = container.querySelector('.control');
+    const gameField = document.querySelector('.game__field-wrapper');
     const btnStartSnake = document.querySelector('#start-snake');
     const userResult = {};
 
     savingScores(userResult);
-    erasing(canvas);
+    erasing(gameField);
     erasing(controlPanel);
-    btnStartSnake.classList.remove('hide');
+    erasing(btnStartSnake);
 
     drawingCongratulation();
     drawingHighScoresTable(userResult);
@@ -492,7 +492,7 @@ function game(container, userNickName) {
 
   function drawingCanvas() {
     container.insertAdjacentHTML('afterbegin', `
-      <div class="game__field-bg">
+      <div class="game__field-wrapper">
         <canvas
           class="game__field"
           width="${width}"
@@ -514,7 +514,7 @@ function game(container, userNickName) {
           <span class="control__score-value">${user.score}</span>
         </div>
         <div class="control__buttons">
-          <button class="control__button control__restart"></button>
+          <!--<button class="control__button control__restart"></button>-->
           <button class="control__button control__pause"></button>
         </div>
         <div class="control__live">
@@ -570,8 +570,11 @@ function game(container, userNickName) {
 
     function drawingRow(item, i) {
       const date = new Date(item[1].date);
+      const className = (item[1].date === userResult.date)
+        ? 'class="game__row-highlight"'
+        : 'class="game__row"';
       const row = `
-        <tr>
+        <tr ${className}>
           <td>${i + 1}.</td>
           <td>
             ${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}
@@ -592,7 +595,7 @@ function game(container, userNickName) {
   function drawingCongratulation() {
     container.insertAdjacentHTML('afterbegin', `
       <div class="game__congrat">
-        <img src="./images/snake.svg" class="game__image">
+        <img src="./images/snake.svg" class="game__congrat-image">
         <h2>Congratulation!</h2>
         You scored ${user.score} points!
       </div>
