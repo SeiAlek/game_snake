@@ -69,7 +69,8 @@ function game(container, userNickName) {
     height = (clientHeight - (clientHeight % grid)) - (grid * 6);
   }
 
-  canvasInit();
+  drawingCanvas();
+  initEventListeners();
 
   const canvas = container.querySelector('.game__field');
   const context = canvas.getContext('2d');
@@ -191,15 +192,6 @@ function game(container, userNickName) {
 
   startGame();
 
-  document.addEventListener('keydown', handleKeyDown);
-  container.addEventListener('touchstart', handleTouchStart);
-  container.addEventListener('touchmove', handleTouch);
-  container.addEventListener('touchend', handleTouchEnd);
-
-  document.addEventListener('click', pauseButton);
-  document.addEventListener('keydown', pauseKeys);
-  document.addEventListener('click', initRestartGame);
-
   function loop() {
     if (pause) {
       return;
@@ -207,7 +199,7 @@ function game(container, userNickName) {
 
     setTimeout(function() {
       requestAnimationFrame(loop);
-      clearField();
+      clearContext();
       snake.moving();
       snake.handleLength();
       apple.drawing();
@@ -215,37 +207,18 @@ function game(container, userNickName) {
     }, 1000 / fps);
   }
 
-  function trottle(f, delay) {
-    let isBussy = false;
-    let savedCoords = null;
+  function initEventListeners() {
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('click', handleClick);
 
-    return function wrapper(...args) {
-      if (isBussy) {
-        savedCoords = args;
-
-        return;
-      }
-
-      isBussy = true;
-      savedCoords = null;
-      f(...args);
-
-      setTimeout(() => {
-        isBussy = false;
-
-        if (savedCoords) {
-          wrapper(...savedCoords);
-        }
-      }, delay);
-    };
-  }
-
-  function setVelocity(x, y) {
-    snake.dx = x;
-    snake.dy = y;
+    container.addEventListener('touchstart', handleTouchStart);
+    container.addEventListener('touchmove', handleTouch);
+    container.addEventListener('touchend', handleTouchEnd);
   }
 
   function handleKeyDown(e) {
+    e.preventDefault();
+
     if ((e.key === 'ArrowUp' || e.keyCode === 87) && (snake.dy === 0)) {
       setNewVelocity(0, -grid);
     }
@@ -260,6 +233,21 @@ function game(container, userNickName) {
 
     if ((e.key === 'ArrowRight' || e.keyCode === 68) && (snake.dx === 0)) {
       setNewVelocity(grid, 0);
+    }
+
+    if (e.keyCode === 80 || e.code === 'Space') {
+      setPause();
+    }
+  }
+
+  function handleClick(e) {
+    if (e.target.closest('.control__pause')) {
+      setPause();
+    }
+
+    if (e.target.closest('.control__restart')) {
+      drawingPopUp();
+      confirmRestartGame();
     }
   }
 
@@ -321,42 +309,34 @@ function game(container, userNickName) {
     delete swipe.startY;
   }
 
-  function clearField() {
-    context.clearRect(0, 0, canvas.width, canvas.height);
+  function trottle(f, delay) {
+    let isBussy = false;
+    let savedCoords = null;
+
+    return function wrapper(...args) {
+      if (isBussy) {
+        savedCoords = args;
+
+        return;
+      }
+
+      isBussy = true;
+      savedCoords = null;
+      f(...args);
+
+      setTimeout(() => {
+        isBussy = false;
+
+        if (savedCoords) {
+          wrapper(...savedCoords);
+        }
+      }, delay);
+    };
   }
 
-  function canvasInit() {
-    container.insertAdjacentHTML('afterbegin', `
-      <div class="game__field-bg">
-        <canvas
-          class="game__field"
-          width="${width}"
-          height="${height}"
-        ></canvas>
-      </div>
-    `);
-  }
-
-  function drawingControlPanel() {
-    const printedName = (user.nickName.length > 8)
-      ? user.nickName.slice(0, 5) + '...'
-      : user.nickName;
-
-    container.insertAdjacentHTML('afterbegin', `
-      <section class="game__control control">
-        <div class="control__score">
-          ${printedName}:&nbsp;
-          <span class="control__score-value">${user.score}</span>
-        </div>
-        <div class="control__buttons">
-          <button class="control__button control__restart"></button>
-          <button class="control__button control__pause"></button>
-        </div>
-        <div class="control__live">
-          ${drawingHeart(user.live)}
-        </div>
-      </section>
-    `);
+  function setVelocity(x, y) {
+    snake.dx = x;
+    snake.dy = y;
   }
 
   function updateScore() {
@@ -380,19 +360,6 @@ function game(container, userNickName) {
     if (user.live === 0) {
       endGame();
     }
-  }
-
-  function drawingHeart(qty = 0) {
-    const heartAlive = `
-      <div class="control__heart control__heart-alive"></div>
-    `;
-    const heartBroken = `
-      <div class="control__heart control__heart-broken"></div>
-    `;
-    const lives = heartAlive.repeat(qty);
-    const broken = heartBroken.repeat(3 - qty);
-
-    return broken + lives;
   }
 
   function updateSpeed() {
@@ -440,14 +407,6 @@ function game(container, userNickName) {
     loop();
   }
 
-  function initRestartGame(e) {
-    if (!e.target.closest('.control__restart')) {
-      return;
-    }
-    drawingPopUp();
-    confirmRestartGame();
-  }
-
   function confirmRestartGame() {
     const popupBlock = document.querySelector('.popup');
 
@@ -468,19 +427,7 @@ function game(container, userNickName) {
     });
   }
 
-  function pauseButton(e) {
-    if (e.target.closest('.control__pause')) {
-      pauseGame();
-    }
-  }
-
-  function pauseKeys(e) {
-    if (e.keyCode === 80) {
-      pauseGame();
-    }
-  }
-
-  function pauseGame(e) {
+  function setPause() {
     const controlBtn = container.querySelector('.control__pause');
 
     controlBtn.classList.toggle('control__pause--active');
@@ -494,18 +441,11 @@ function game(container, userNickName) {
     const userResult = {};
 
     savingScores(userResult);
-    canvas.remove();
-    controlPanel.remove();
+    erasing(canvas);
+    erasing(controlPanel);
     btnStartSnake.classList.remove('hide');
 
-    container.insertAdjacentHTML('afterbegin', `
-      <div class="game__congrat">
-        <img src="./images/snake.svg" class="game__image">
-        <h2>Congratulation!</h2>
-        You scored ${user.score} points!
-      </div>
-    `);
-
+    drawingCongratulation();
     drawingHighScoresTable(userResult);
   }
 
@@ -536,6 +476,65 @@ function game(container, userNickName) {
     }
 
     localStorage.setItem('snake', JSON.stringify(newHighScores));
+  }
+
+  function sortHighScores(a, b) {
+    if (a.score !== b.score) {
+      return b.score - a.score;
+    }
+
+    return b.date - a.date;
+  }
+
+  function clearContext() {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  function drawingCanvas() {
+    container.insertAdjacentHTML('afterbegin', `
+      <div class="game__field-bg">
+        <canvas
+          class="game__field"
+          width="${width}"
+          height="${height}"
+        ></canvas>
+      </div>
+    `);
+  }
+
+  function drawingControlPanel() {
+    const printedName = (user.nickName.length > 8)
+      ? user.nickName.slice(0, 5) + '...'
+      : user.nickName;
+
+    container.insertAdjacentHTML('afterbegin', `
+      <section class="game__control control">
+        <div class="control__score">
+          ${printedName}:&nbsp;
+          <span class="control__score-value">${user.score}</span>
+        </div>
+        <div class="control__buttons">
+          <button class="control__button control__restart"></button>
+          <button class="control__button control__pause"></button>
+        </div>
+        <div class="control__live">
+          ${drawingHeart(user.live)}
+        </div>
+      </section>
+    `);
+  }
+
+  function drawingHeart(qty = 0) {
+    const heartAlive = `
+      <div class="control__heart control__heart-alive"></div>
+    `;
+    const heartBroken = `
+      <div class="control__heart control__heart-broken"></div>
+    `;
+    const lives = heartAlive.repeat(qty);
+    const broken = heartBroken.repeat(3 - qty);
+
+    return broken + lives;
   }
 
   function drawingHighScoresTable(userResult) {
@@ -590,12 +589,14 @@ function game(container, userNickName) {
     }
   }
 
-  function sortHighScores(a, b) {
-    if (a.score !== b.score) {
-      return b.score - a.score;
-    }
-
-    return b.date - a.date;
+  function drawingCongratulation() {
+    container.insertAdjacentHTML('afterbegin', `
+      <div class="game__congrat">
+        <img src="./images/snake.svg" class="game__image">
+        <h2>Congratulation!</h2>
+        You scored ${user.score} points!
+      </div>
+    `);
   }
 
   function drawingPopUp() {
