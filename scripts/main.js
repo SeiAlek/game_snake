@@ -569,8 +569,9 @@ function game(container, userNickName) {
     `);
 
     function drawingRow(item, i) {
-      const date = new Date(item[1].date);
-      const className = (item[1].date === userResult.date)
+      const result = item[1];
+      const date = new Date(result.date);
+      const className = (result.date === userResult.date)
         ? 'class="game__row-highlight"'
         : 'class="game__row"';
       const row = `
@@ -580,10 +581,10 @@ function game(container, userNickName) {
             ${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}
           </td>
           <td>
-            ${item[1].nickName}
+            ${result.nickName}
           </td>
           <td>
-            ${item[1].score}
+            ${result.score}
           </td>
         </tr>
       `;
