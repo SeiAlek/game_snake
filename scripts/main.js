@@ -11,7 +11,7 @@ function initGame() {
   const gameStart = document.querySelector('.game__start');
   const userNickName = document.querySelector('#user-nick-name');
 
-  btnStartSnake.addEventListener('click', e => {
+  btnStartSnake.addEventListener('click', () => {
     eraisingStartElements();
     game(container, userNickName.value);
   });
@@ -55,7 +55,7 @@ function game(container, userNickName) {
   let height = grid * 40;
   const colorSnake = '#204051';
   const colorFood = '#ff0000';
-  const fpsBase = 3;
+  const fpsBase = 5;
 
   if (clientWidth < 768) {
     width = clientWidth - (clientWidth % grid);
@@ -563,7 +563,7 @@ function game(container, userNickName) {
             <th>Nick</th>
             <th>Score</th>
           </tr>
-          ${highScores.map((item, i) => drawingRow(item, i))}
+          ${highScores.map((item, i) => drawingRow(item, i)).join('')}
         </table>
       </div>
     `);
