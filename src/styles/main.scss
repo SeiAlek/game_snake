@@ -1,7 +1,11 @@
 @import "utils";
 @import "fonts";
 @import "typography";
+@import "page";
+@import "game";
+@import "control";
+@import "popup";
 
-body {
-  background: $c-gray;
+.hide {
+  display: none;
 }
